@@ -3,9 +3,11 @@ package GUI;
 import BUS.Employee_BUS;
 import BUS.FoodCategory_BUS;
 import BUS.FoodItem_BUS;
+import BUS.Table_BUS;
 import DTO.Employee_DTO;
 import DTO.FoodCategory_DTO;
 import DTO.FoodItem_DTO;
+import DTO.Table_DTO;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
@@ -29,12 +31,10 @@ public class Manager_GUI extends JPanel {
         initComponents();
         settingTable();
         setIconForButton();
-//        renderEmployeeData();
-//        renderFoodCategory();
-        renderFoodItem();
+        renderEmployeeData();        
     }
-    
-    private void settingTable(){
+
+    private void settingTable() {
         tblData.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
         tblData.getTableHeader().setOpaque(false);
         tblData.getTableHeader().setBackground(new Color(51, 175, 255));
@@ -42,8 +42,8 @@ public class Manager_GUI extends JPanel {
         tblData.setShowGrid(false);//tắt đường viền của bảng        
         tblData.setModel(model);
     }
-    
-    private void setIconForButton(){
+
+    private void setIconForButton() {
         String filePath = new File("").getAbsolutePath();
         String pathAdd = filePath.concat("\\src\\main\\java\\icons\\add_25px.png");
         String pathEdit = filePath.concat("\\src\\main\\java\\icons\\edit_25px.png");
@@ -57,6 +57,10 @@ public class Manager_GUI extends JPanel {
     }
 
     public void renderEmployeeData() {
+        // xoa du lieu trong model
+        model.setRowCount(0); 
+        model.setColumnCount(0);
+        
         Vector<Employee_DTO> vectorEmployee = new Vector<>();
         Employee_BUS t = new Employee_BUS();
         vectorEmployee = t.getAllEmployee();
@@ -66,51 +70,59 @@ public class Manager_GUI extends JPanel {
         model.addColumn("Password");
         model.addColumn("SĐT");
         model.addColumn("Chức vụ");
-        model.addColumn("Ngày vào làm");        
-        model.addColumn("Lương");        
+        model.addColumn("Ngày vào làm");
+        model.addColumn("Lương");
         int id, salary;
-        String username, password, name, phoneNumber, permission,startDate;        
+        String username, password, name, phoneNumber, permission, startDate;
         for (int i = 0; i < vectorEmployee.size(); i++) {
             id = vectorEmployee.get(i).getId();
             username = vectorEmployee.get(i).getUsername();
             password = vectorEmployee.get(i).getPassword();
             name = vectorEmployee.get(i).getName();
             phoneNumber = vectorEmployee.get(i).getPhoneNumber();
-            permission = vectorEmployee.get(i).getPermission().equals("manager") ? "Quản Lý" : "Nhân Viên" ; 
+            permission = vectorEmployee.get(i).getPermission().equals("manager") ? "Quản Lý" : "Nhân Viên";
             startDate = vectorEmployee.get(i).getStartDate().toString().split(" ")[0];
             salary = vectorEmployee.get(i).getSalary();
-            model.addRow(new Object[]{id,name,username,password,phoneNumber,permission,startDate,salary});
+            model.addRow(new Object[]{id, name, username, password, phoneNumber, permission, startDate, salary});
         }
     }
-    
-    public void renderFoodCategory(){
+
+    public void renderFoodCategory() {
+        // xoa du lieu trong model
+        model.setRowCount(0); 
+        model.setColumnCount(0);
+        
         Vector<FoodCategory_DTO> vectorFoodCategory = new Vector<>();
         FoodCategory_BUS t = new FoodCategory_BUS();
         vectorFoodCategory = t.getAllFoodCategory();
         model.addColumn("ID");
-        model.addColumn("Tên loại");;        
+        model.addColumn("Tên loại");;
         int id;
         String name;
         for (int i = 0; i < vectorFoodCategory.size(); i++) {
             id = vectorFoodCategory.get(i).getId();
-            name = vectorFoodCategory.get(i).getName();   
-            model.addRow(new Object[]{id,name});
+            name = vectorFoodCategory.get(i).getName();
+            model.addRow(new Object[]{id, name});
         }
     }
-    
-    public void renderFoodItem(){
+
+    public void renderFoodItem() {
+        // xoa du lieu trong model
+        model.setRowCount(0); 
+        model.setColumnCount(0);
+        
         Vector<FoodItem_DTO> vectorFoodItem = new Vector<>();
         FoodItem_BUS t = new FoodItem_BUS();
         vectorFoodItem = t.getAllFoodItem();
         model.addColumn("ID");
-        model.addColumn("Tên món");    
+        model.addColumn("Tên món");
         model.addColumn("Mô tả");
         model.addColumn("Link ảnh");
         model.addColumn("Tên dơn vị");
         model.addColumn("Giá đơn vị");
         model.addColumn("Mã loại");
         int id, unitPrice, idCategory;
-        String name, description, urlImage, unitName;        
+        String name, description, urlImage, unitName;
         for (int i = 0; i < vectorFoodItem.size(); i++) {
             id = vectorFoodItem.get(i).getId();
             name = vectorFoodItem.get(i).getName();
@@ -118,11 +130,53 @@ public class Manager_GUI extends JPanel {
             urlImage = vectorFoodItem.get(i).getUrlImage();
             unitName = vectorFoodItem.get(i).getUnitName();
             unitPrice = vectorFoodItem.get(i).getUnitPrice();
-            idCategory = vectorFoodItem.get(i).getIdCategory();             
-            model.addRow(new Object[]{id,name,description,urlImage,unitName,unitPrice,idCategory});
+            idCategory = vectorFoodItem.get(i).getIdCategory();
+            model.addRow(new Object[]{id, name, description, urlImage, unitName, unitPrice, idCategory});
         }
     }
-
+ 
+    public void renderTable() {
+        // xoa du lieu trong model
+        model.setRowCount(0); 
+        model.setColumnCount(0);
+        
+        Vector<Table_DTO> vectorTable = new Vector<>();
+        Table_BUS t = new Table_BUS();
+        vectorTable = t.getAllTable();
+        model.addColumn("ID");
+        model.addColumn("Tên bàn");
+        model.addColumn("Trạng thái");
+        int id;
+        String name, status;
+        for (int i = 0; i < vectorTable.size(); i++) {
+            id = vectorTable.get(i).getId();
+            name = vectorTable.get(i).getName();
+            status = vectorTable.get(i).getName();                 
+            model.addRow(new Object[]{id, name, status});
+        }
+    }
+ //-----------------------------------------------------------------------------------------------------------------   
+    public void renderCustomer() {
+        // xoa du lieu trong model
+        model.setRowCount(0); 
+        model.setColumnCount(0);
+                
+    }
+    
+    public void renderOrder() {
+        // xoa du lieu trong model
+        model.setRowCount(0); 
+        model.setColumnCount(0);
+                
+    }
+    
+    public void renderStatistical() {
+        // xoa du lieu trong model
+        model.setRowCount(0); 
+        model.setColumnCount(0);
+                
+    }
+//-----------------------------------------------------------------------------------------------------------------
     public JComboBox<String> getCboSearchField() {
         return cboSearchField;
     }

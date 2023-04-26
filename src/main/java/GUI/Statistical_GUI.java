@@ -27,6 +27,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
         setupHeader(tblProduct);
         setupHeader(tblSession);
         renderSessionData();
+        setVisible(true);
     }
 
     private void setIconImg() {
@@ -158,7 +159,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         tblSession = new javax.swing.JTable();
 
-        setLayout(new java.awt.BorderLayout());
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel13.setPreferredSize(new java.awt.Dimension(1008, 150));
         jPanel13.setLayout(new java.awt.BorderLayout());
@@ -414,7 +415,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
 
         jPanel13.add(pnlHead, java.awt.BorderLayout.CENTER);
 
-        add(jPanel13, java.awt.BorderLayout.PAGE_START);
+        add(jPanel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1022, -1));
 
         pnlContent.setPreferredSize(new java.awt.Dimension(1008, 530));
         pnlContent.setLayout(null);
@@ -438,7 +439,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
             }
         ));
         tblProduct.setRowHeight(25);
-        jPanel15.add(tblProduct, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 500, 590));
+        jPanel15.add(tblProduct, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 500, 470));
 
         pnlContent.add(jPanel15);
         jPanel15.setBounds(500, 0, 510, 640);
@@ -449,6 +450,8 @@ public class Statistical_GUI extends javax.swing.JPanel {
         jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel12.setText("Thống kê phiên làm việc");
         jPanel16.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
+
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(452, 1));
 
         tblSession.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -461,15 +464,16 @@ public class Statistical_GUI extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblSession.setPreferredSize(new java.awt.Dimension(452, 1000));
         tblSession.setRowHeight(25);
         jScrollPane2.setViewportView(tblSession);
 
-        jPanel16.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 490, 590));
+        jPanel16.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 500, 470));
 
         pnlContent.add(jPanel16);
         jPanel16.setBounds(6, 0, 500, 640);
 
-        add(pnlContent, java.awt.BorderLayout.CENTER);
+        add(pnlContent, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 1022, 609));
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

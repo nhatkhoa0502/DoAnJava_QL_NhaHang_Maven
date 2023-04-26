@@ -8,8 +8,26 @@ import java.util.Vector;
 
 
 public class Employee_BUS {
-    public Vector<Employee_DTO> getAllEmployee(){
-        Employee_DAO t = new Employee_DAO();
-        return t.getAllEmployee();
+    private Employee_DAO emd = new Employee_DAO();
+    
+    public Vector<Employee_DTO> getAllEmployee(){        
+        return emd.getAllEmployee();
     } 
+    
+    public boolean checkLogin(String username, String password){
+        System.out.println("usr; "+username);
+        System.out.println("pass: "+password);
+        Vector<Employee_DTO> vectorEmployee = getAllEmployee();
+        for (int i = 0; i < vectorEmployee.size(); i++) {            
+            if(username.equals(vectorEmployee.get(i).getUsername()) && password.equals(vectorEmployee.get(i).getPassword())){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public String getName(String username,String password){
+        return emd.getName(username, password);
+    }
+    
 }

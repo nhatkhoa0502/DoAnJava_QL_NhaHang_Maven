@@ -1,23 +1,150 @@
 package GUI;
 
+import BUS.Employee_BUS;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import GUI.Manager_GUI;
+import java.io.File;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 public class Main_GUI extends javax.swing.JFrame {
 
-    public Main_GUI() {
+    private Vector<MenuItem> vectorMenuItem = new Vector<>();
+    private Manager_GUI managerGUI = new Manager_GUI();
+    private Statistical_GUI statiscalGUI = new Statistical_GUI();
+
+    public Main_GUI(String username, String password) {
         initComponents();
-        setSize(1200, 700);
+        addMenuItem();
+        addEventForMenuItem();
+        addName(username, password);
+
+        setSize(1250, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);        
-        panelLayout.add(new Manager_GUI(),BorderLayout.CENTER);        
-        setVisible(true);          
-    }        
-    
+        setLocationRelativeTo(null);
+        panelLayout.add(managerGUI, BorderLayout.CENTER);
+        panelLayout.add(statiscalGUI, BorderLayout.WEST);
+        statiscalGUI.setVisible(false);
+
+        setVisible(true);
+    }
+
+    private void addName(String username, String password) {
+        lbName.setText(new Employee_BUS().getName(username, password));
+    }
+
+    private void addMenuItem() {
+        String filePath = new File("").getAbsolutePath();
+
+        String pathQLNV = filePath.concat("\\src\\main\\java\\icons\\user_groups_25px.png");
+        String pathLoaiMon = filePath.concat("\\src\\main\\java\\icons\\edit_25px.png");
+        String pathMonAn = filePath.concat("\\src\\main\\java\\icons\\food_25px.png");
+        String pathBan = filePath.concat("\\src\\main\\java\\icons\\table_25px.png");
+        String pathKH = filePath.concat("\\src\\main\\java\\icons\\user_25px.png");
+        String pathDDH = filePath.concat("\\src\\main\\java\\icons\\purchase_order_25px.png");
+        String pathThongKe = filePath.concat("\\src\\main\\java\\icons\\increase_25px.png");
+
+        Icon iconQLNV = new ImageIcon(pathQLNV);
+        Icon iconLoaiMon = new ImageIcon(pathLoaiMon);
+        Icon iconMonAn = new ImageIcon(pathMonAn);
+        Icon iconBan = new ImageIcon(pathBan);
+        Icon iconKH = new ImageIcon(pathKH);
+        Icon iconDDH = new ImageIcon(pathDDH);
+        Icon iconThongKe = new ImageIcon(pathThongKe);
+
+        vectorMenuItem.add(new MenuItem("qlnv", iconQLNV, "Quản lý nhân viên"));
+        vectorMenuItem.add(new MenuItem("qllm", iconLoaiMon, "Quản lý loại món"));
+        vectorMenuItem.add(new MenuItem("qlma", iconMonAn, "Quản lý món ăn"));
+        vectorMenuItem.add(new MenuItem("qlb", iconBan, "Quản lý bàn"));
+        vectorMenuItem.add(new MenuItem("qlkh", iconKH, "Quản lý khách hàng"));
+        vectorMenuItem.add(new MenuItem("qlddh", iconDDH, "Quản lý đơn đặt hàng"));
+        vectorMenuItem.add(new MenuItem("thongke", iconThongKe, "Thống kê"));
+
+        vectorMenuItem.get(0).setActive(true);//trang mặc định là qlnv
+        vectorMenuItem.get(0).setBackground(new Color(187, 187, 187));
+        vectorMenuItem.get(0).getLbMenuName().setForeground(new Color(255, 255, 255));
+    }
+
+    private void addEventForMenuItem() {
+        //dùng vòng lặp để thêm từng menuItem vào panel
+        for (int i = 0; i < vectorMenuItem.size(); i++) {
+            //thêm từng phần tử
+            panelSideBar.add(vectorMenuItem.get(i));
+            final int index = i;
+            //thêm sự kiện khi click
+            vectorMenuItem.get(i).addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    setActiveFalseForAllMenuItem();
+                    vectorMenuItem.get(index).setActive(true);
+                    System.out.println("============");
+                    for (int i = 0; i < vectorMenuItem.size(); i++) {
+                        System.out.println("test: " + vectorMenuItem.get(i).isActive());
+                        if (vectorMenuItem.get(i).isActive()) {
+                            renderManagerForm(vectorMenuItem.get(i));
+                            vectorMenuItem.get(i).setBackground(new Color(187, 187, 187));
+                            vectorMenuItem.get(i).getLbMenuName().setForeground(new Color(255, 255, 255));
+                        } else {
+                            vectorMenuItem.get(i).setBackground(new Color(255, 255, 255));
+                            vectorMenuItem.get(i).getLbMenuName().setForeground(new Color(60, 63, 65));
+                        }
+                    }
+                    System.out.println("============");
+                }
+
+//                @Override
+//                public void mouseEntered(MouseEvent e) {
+//                    vectorMenuItem.get(index).setBackground(new Color(187, 187, 187));
+//                    vectorMenuItem.get(index).getLbMenuName().setForeground(new Color(255, 255, 255));
+//                }
+//
+//                @Override
+//                public void mouseExited(MouseEvent e) {
+//                    vectorMenuItem.get(index).setBackground(new Color(255, 255, 255));
+//                    vectorMenuItem.get(index).getLbMenuName().setForeground(new Color(60, 63, 65));
+//                }                
+            });
+        }
+    }
+
+    private void renderManagerForm(MenuItem menuItem) {
+        if (menuItem.getId().equals("qlnv")) {
+            managerGUI.setVisible(true);
+            statiscalGUI.setVisible(false);
+            managerGUI.renderEmployeeData();
+        } else if (menuItem.getId().equals("qllm")) {
+            managerGUI.setVisible(true);
+            statiscalGUI.setVisible(false);
+            managerGUI.renderFoodCategory();
+        } else if (menuItem.getId().equals("qlma")) {
+            managerGUI.setVisible(true);
+            statiscalGUI.setVisible(false);
+            managerGUI.renderFoodItem();
+        } else if (menuItem.getId().equals("qlb")) {
+            managerGUI.setVisible(true);
+            statiscalGUI.setVisible(false);
+            managerGUI.renderTable();
+        } else if (menuItem.getId().equals("thongke")) {
+            managerGUI.setVisible(false);
+            statiscalGUI.setVisible(true);
+        }
+    }
+
+    private void setActiveFalseForAllMenuItem() {
+        for (int i = 0; i < vectorMenuItem.size(); i++) {
+            vectorMenuItem.get(i).setActive(false);
+        }
+    }
+
     public void showMessage(String message) {
         JOptionPane.showMessageDialog(this, message);
     }
@@ -48,30 +175,12 @@ public class Main_GUI extends javax.swing.JFrame {
         lbName = new javax.swing.JLabel();
         btnLogout = new javax.swing.JButton();
         panelSideBar = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        jPanel6 = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jPanel8 = new javax.swing.JPanel();
-        jPanel9 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
-        jPanel10 = new javax.swing.JPanel();
-        jPanel11 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        jPanel12 = new javax.swing.JPanel();
-        jPanel13 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
         panelLayout = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Trang quản lý");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        setResizable(false);
+        setPreferredSize(new java.awt.Dimension(1500, 680));
 
         panelLeft.setPreferredSize(new java.awt.Dimension(200, 680));
         panelLeft.setLayout(new java.awt.BorderLayout());
@@ -95,6 +204,11 @@ public class Main_GUI extends javax.swing.JFrame {
         btnLogout.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnLogout.setFocusable(false);
         btnLogout.setRequestFocusEnabled(false);
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -102,108 +216,30 @@ public class Main_GUI extends javax.swing.JFrame {
         panelHeader.add(btnLogout, gridBagConstraints);
 
         panelLeft.add(panelHeader, java.awt.BorderLayout.PAGE_START);
-
-        panelSideBar.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel2.setForeground(new java.awt.Color(153, 153, 153));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel3.setBackground(new java.awt.Color(255, 153, 204));
-        jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 50, 40));
-
-        jLabel1.setBackground(new java.awt.Color(153, 153, 153));
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel1.setText("Quản lý nhân viên");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 140, 40));
-
-        panelSideBar.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 200, 40));
-
-        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel5.setBackground(new java.awt.Color(255, 153, 204));
-        jPanel4.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 50, 40));
-
-        jLabel2.setText("Quản lý nhân viên");
-        jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 140, 40));
-
-        panelSideBar.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 200, 40));
-
-        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel7.setBackground(new java.awt.Color(255, 153, 204));
-        jPanel6.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 50, 40));
-
-        jLabel3.setText("Quản lý nhân viên");
-        jPanel6.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 140, 40));
-
-        panelSideBar.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 200, -1));
-
-        jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel9.setBackground(new java.awt.Color(255, 153, 204));
-        jPanel8.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 50, 40));
-
-        jLabel4.setText("Quản lý nhân viên");
-        jPanel8.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 140, 40));
-
-        panelSideBar.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 160, 200, 40));
-
-        jPanel10.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel11.setBackground(new java.awt.Color(255, 153, 204));
-        jPanel10.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 50, 40));
-
-        jLabel5.setText("Quản lý nhân viên");
-        jPanel10.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 140, 40));
-
-        panelSideBar.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 210, 200, 40));
-
-        jPanel12.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel13.setBackground(new java.awt.Color(255, 153, 204));
-        jPanel12.add(jPanel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 50, 40));
-
-        jLabel6.setText("Quản lý nhân viên");
-        jPanel12.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 140, 40));
-
-        panelSideBar.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 260, 200, 40));
-
         panelLeft.add(panelSideBar, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(panelLeft, java.awt.BorderLayout.LINE_START);
 
-        panelLayout.setMaximumSize(new java.awt.Dimension(1000, 680));
-        panelLayout.setMinimumSize(new java.awt.Dimension(1000, 680));
-        panelLayout.setPreferredSize(new java.awt.Dimension(1008, 680));
+        panelLayout.setMaximumSize(new java.awt.Dimension(1030, 680));
+        panelLayout.setMinimumSize(new java.awt.Dimension(1020, 680));
+        panelLayout.setPreferredSize(new java.awt.Dimension(200, 680));
         panelLayout.setLayout(new java.awt.BorderLayout());
         getContentPane().add(panelLayout, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+        setVisible(false);
+        new Login_GUI().setVisible(true);
+        System.out.println("Dang xuat thanh cong!");
+    }//GEN-LAST:event_btnLogoutActionPerformed
+
     /**
      * @param args the command line arguments
      */
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogout;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel12;
-    private javax.swing.JPanel jPanel13;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
     private javax.swing.JLabel lbName;
     private javax.swing.JPanel panelHeader;
     private javax.swing.JPanel panelLayout;

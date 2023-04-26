@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 public class Test_Statistical extends JFrame {
     public Test_Statistical(){        
         setTitle("Thống Kê");
-        setSize(1025, 779);
+        setSize(1025, 720);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
