@@ -164,14 +164,14 @@ public class Login_GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_txtPasswordKeyPressed
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        Employee_BUS em = new Employee_BUS();
+        Employee_BUS em = new Employee_BUS();                
         if(!em.checkLogin(txtUsername.getText(), txtPassword.getText())){
             JOptionPane.showMessageDialog(null, "Tai khoan hoac mat khau khong dung!",
                     "Output",JOptionPane.INFORMATION_MESSAGE); 
         }
         else{
             setVisible(false); 
-            new Main_GUI(txtUsername.getText(),txtPassword.getText());
+            new Main_GUI(txtUsername.getText(),txtPassword.getText());            
             System.out.println("Dang nhap thanh cong!");
         }
            

@@ -1,6 +1,7 @@
 package GUI;
 
 import BUS.Employee_BUS;
+import BUS.Statistical_BUS;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
@@ -17,17 +18,28 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 public class Main_GUI extends javax.swing.JFrame {
+    
+    private String username;
+    private String password;
 
     private Vector<MenuItem> vectorMenuItem = new Vector<>();
     private Manager_GUI managerGUI = new Manager_GUI();
     private Statistical_GUI statiscalGUI = new Statistical_GUI();
+    private Employee_BUS employeeBUS = new Employee_BUS();
+    private Statistical_BUS statisticalBUS = new Statistical_BUS();
+    
 
     public Main_GUI(String username, String password) {
+        
+        this.username = username;
+        this.password = password;
+        
         initComponents();
         addMenuItem();
         addEventForMenuItem();
-        addName(username, password);
-
+        addName();
+        statisticalBUS.writeLoginTime(username,password);
+        
         setSize(1250, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -38,15 +50,15 @@ public class Main_GUI extends javax.swing.JFrame {
         setVisible(true);
     }
 
-    private void addName(String username, String password) {
-        lbName.setText(new Employee_BUS().getName(username, password));
+    private void addName() {
+        lbName.setText(employeeBUS.getName(username, password));
     }
 
     private void addMenuItem() {
         String filePath = new File("").getAbsolutePath();
 
         String pathQLNV = filePath.concat("\\src\\main\\java\\icons\\user_groups_25px.png");
-        String pathLoaiMon = filePath.concat("\\src\\main\\java\\icons\\edit_25px.png");
+        String pathLoaiMon = filePath.concat("\\src\\main\\java\\icons\\cardboard_box_25px.png");
         String pathMonAn = filePath.concat("\\src\\main\\java\\icons\\food_25px.png");
         String pathBan = filePath.concat("\\src\\main\\java\\icons\\table_25px.png");
         String pathKH = filePath.concat("\\src\\main\\java\\icons\\user_25px.png");
@@ -61,15 +73,20 @@ public class Main_GUI extends javax.swing.JFrame {
         Icon iconDDH = new ImageIcon(pathDDH);
         Icon iconThongKe = new ImageIcon(pathThongKe);
 
-        vectorMenuItem.add(new MenuItem("qlnv", iconQLNV, "Quản lý nhân viên"));
-        vectorMenuItem.add(new MenuItem("qllm", iconLoaiMon, "Quản lý loại món"));
-        vectorMenuItem.add(new MenuItem("qlma", iconMonAn, "Quản lý món ăn"));
-        vectorMenuItem.add(new MenuItem("qlb", iconBan, "Quản lý bàn"));
+        if (employeeBUS.isManager(username, password)) {
+            vectorMenuItem.add(new MenuItem("qlnv", iconQLNV, "Quản lý nhân viên"));
+            vectorMenuItem.add(new MenuItem("qllm", iconLoaiMon, "Quản lý loại món"));
+            vectorMenuItem.add(new MenuItem("qlma", iconMonAn, "Quản lý món ăn"));
+            vectorMenuItem.add(new MenuItem("qlb", iconBan, "Quản lý bàn"));            
+        }
         vectorMenuItem.add(new MenuItem("qlkh", iconKH, "Quản lý khách hàng"));
         vectorMenuItem.add(new MenuItem("qlddh", iconDDH, "Quản lý đơn đặt hàng"));
-        vectorMenuItem.add(new MenuItem("thongke", iconThongKe, "Thống kê"));
+        if (employeeBUS.isManager(username, password)) {
+            vectorMenuItem.add(new MenuItem("thongke", iconThongKe, "Thống kê"));
+        }
 
-        vectorMenuItem.get(0).setActive(true);//trang mặc định là qlnv
+        vectorMenuItem.get(0).setActive(true);//trang mặc định
+        renderManagerForm(vectorMenuItem.get(0));
         vectorMenuItem.get(0).setBackground(new Color(187, 187, 187));
         vectorMenuItem.get(0).getLbMenuName().setForeground(new Color(255, 255, 255));
     }
@@ -133,6 +150,14 @@ public class Main_GUI extends javax.swing.JFrame {
             managerGUI.setVisible(true);
             statiscalGUI.setVisible(false);
             managerGUI.renderTable();
+        } else if (menuItem.getId().equals("qlkh")) {
+            managerGUI.setVisible(true);
+            statiscalGUI.setVisible(false);
+            managerGUI.renderCustomer();
+        } else if (menuItem.getId().equals("qlddh")) {
+            managerGUI.setVisible(true);
+            statiscalGUI.setVisible(false);
+            managerGUI.renderOrder();
         } else if (menuItem.getId().equals("thongke")) {
             managerGUI.setVisible(false);
             statiscalGUI.setVisible(true);
@@ -230,7 +255,8 @@ public class Main_GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
-        setVisible(false);
+        statisticalBUS.writeLogoutTime();
+        setVisible(false);        
         new Login_GUI().setVisible(true);
         System.out.println("Dang xuat thanh cong!");
     }//GEN-LAST:event_btnLogoutActionPerformed

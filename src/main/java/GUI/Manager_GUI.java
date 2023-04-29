@@ -1,16 +1,21 @@
 package GUI;
 
+import BUS.Customer_BUS;
 import BUS.Employee_BUS;
 import BUS.FoodCategory_BUS;
 import BUS.FoodItem_BUS;
+import BUS.Order_BUS;
 import BUS.Table_BUS;
+import DTO.Customer_DTO;
 import DTO.Employee_DTO;
 import DTO.FoodCategory_DTO;
 import DTO.FoodItem_DTO;
+import DTO.Order_DTO;
 import DTO.Table_DTO;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.Vector;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -30,8 +35,7 @@ public class Manager_GUI extends JPanel {
     public Manager_GUI() {
         initComponents();
         settingTable();
-        setIconForButton();
-        renderEmployeeData();        
+        setIconForButton();        
     }
 
     private void settingTable() {
@@ -58,9 +62,9 @@ public class Manager_GUI extends JPanel {
 
     public void renderEmployeeData() {
         // xoa du lieu trong model
-        model.setRowCount(0); 
+        model.setRowCount(0);
         model.setColumnCount(0);
-        
+
         Vector<Employee_DTO> vectorEmployee = new Vector<>();
         Employee_BUS t = new Employee_BUS();
         vectorEmployee = t.getAllEmployee();
@@ -89,9 +93,9 @@ public class Manager_GUI extends JPanel {
 
     public void renderFoodCategory() {
         // xoa du lieu trong model
-        model.setRowCount(0); 
+        model.setRowCount(0);
         model.setColumnCount(0);
-        
+
         Vector<FoodCategory_DTO> vectorFoodCategory = new Vector<>();
         FoodCategory_BUS t = new FoodCategory_BUS();
         vectorFoodCategory = t.getAllFoodCategory();
@@ -108,9 +112,9 @@ public class Manager_GUI extends JPanel {
 
     public void renderFoodItem() {
         // xoa du lieu trong model
-        model.setRowCount(0); 
+        model.setRowCount(0);
         model.setColumnCount(0);
-        
+
         Vector<FoodItem_DTO> vectorFoodItem = new Vector<>();
         FoodItem_BUS t = new FoodItem_BUS();
         vectorFoodItem = t.getAllFoodItem();
@@ -134,12 +138,12 @@ public class Manager_GUI extends JPanel {
             model.addRow(new Object[]{id, name, description, urlImage, unitName, unitPrice, idCategory});
         }
     }
- 
+
     public void renderTable() {
         // xoa du lieu trong model
-        model.setRowCount(0); 
+        model.setRowCount(0);
         model.setColumnCount(0);
-        
+
         Vector<Table_DTO> vectorTable = new Vector<>();
         Table_BUS t = new Table_BUS();
         vectorTable = t.getAllTable();
@@ -151,32 +155,84 @@ public class Manager_GUI extends JPanel {
         for (int i = 0; i < vectorTable.size(); i++) {
             id = vectorTable.get(i).getId();
             name = vectorTable.get(i).getName();
-            status = vectorTable.get(i).getName();                 
+            status = vectorTable.get(i).getStatus().equals("free") ? "Trống" : "Đang phục vụ" ; 
             model.addRow(new Object[]{id, name, status});
         }
     }
- //-----------------------------------------------------------------------------------------------------------------   
+    //-----------------------------------------------------------------------------------------------------------------   
+
     public void renderCustomer() {
         // xoa du lieu trong model
-        model.setRowCount(0); 
+        model.setRowCount(0);
         model.setColumnCount(0);
-                
+
+        Vector<Customer_DTO> vectorCustomer = new Vector<>();
+        Customer_BUS t = new Customer_BUS();
+        vectorCustomer = t.getAllCustomer();
+        model.addColumn("ID");
+        model.addColumn("Tên");
+        model.addColumn("SĐT");
+        model.addColumn("Số đơn hàng");
+
+        int id;
+        String name, phoneNumber;
+        for (int i = 0; i < vectorCustomer.size(); i++) {
+//            đếm số đơn hàng trong bảng order....
+            id = vectorCustomer.get(i).getId();
+            name = vectorCustomer.get(i).getName();
+            phoneNumber = vectorCustomer.get(i).getPhoneNumber();
+            model.addRow(new Object[]{id, name, phoneNumber});
+        }
     }
-    
+
     public void renderOrder() {
         // xoa du lieu trong model
-        model.setRowCount(0); 
+        model.setRowCount(0);
         model.setColumnCount(0);
-                
-    }
-    
+
+        Vector<Order_DTO> vectorOrder = new Vector<>();
+        Order_BUS t = new Order_BUS();
+        vectorOrder = t.getAllOrder();
+        model.addColumn("ID");        
+        model.addColumn("IDNV");
+        model.addColumn("IDKH");
+        model.addColumn("ID bàn");
+        model.addColumn("Loại");
+        model.addColumn("Ngày lập HĐ");
+        model.addColumn("Trạng thái");        
+        model.addColumn("Giảm giá (%)");
+        model.addColumn("Tổng tiền");
+        
+        tblData.getColumnModel().getColumn(0).setPreferredWidth(10);
+        tblData.getColumnModel().getColumn(1).setPreferredWidth(10);
+        tblData.getColumnModel().getColumn(2).setPreferredWidth(10);
+        tblData.getColumnModel().getColumn(3).setPreferredWidth(10);
+
+        int id, idEmployee, idCustomer, idTable, totalAmount, discount;
+        String type, status;
+        Timestamp orderDate;
+        for (int i = 0; i < vectorOrder.size(); i++) {
+            id = vectorOrder.get(i).getId();
+            idEmployee = vectorOrder.get(i).getIdEmployee();
+            idCustomer = vectorOrder.get(i).getIdCustomer();
+            idTable = vectorOrder.get(i).getIdTable();
+            type = vectorOrder.get(i).getType().equals("takeaway") ? "Mang về" : "Tại quán";
+            status = vectorOrder.get(i).getStatus().equals("paid") ? "Đã thanh toán" : "Bị hủy";
+            orderDate = vectorOrder.get(i).getOrderDate();
+            discount = vectorOrder.get(i).getDiscount();
+            totalAmount = vectorOrder.get(i).getTotalAmount();
+            model.addRow(new Object[]{id, idEmployee, idCustomer, idTable, type, orderDate, status, discount, totalAmount});
+        }
+    }    
+
     public void renderStatistical() {
         // xoa du lieu trong model
-        model.setRowCount(0); 
+        model.setRowCount(0);
         model.setColumnCount(0);
-                
+
     }
 //-----------------------------------------------------------------------------------------------------------------
+
     public JComboBox<String> getCboSearchField() {
         return cboSearchField;
     }
@@ -238,21 +294,6 @@ public class Manager_GUI extends JPanel {
         return id;
     }
 
-//    public void renderTable() {
-//        tableModel.setNumRows(0);
-//        try {
-//            for (T item : tableData) {
-//                tableModel.addRow(item.toRowTable());
-//            }
-//        } catch (Exception e) {
-//            System.out.println(e);
-//        }
-//    }
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

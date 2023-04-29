@@ -41,6 +41,31 @@ public class Employee_DAO {
         }
         return vectorEmployee;
     }
+    
+    public Employee_DTO getEmployeeByUsrPass(String username, String password){
+        String sql = "SELECT * FROM employee WHERE username ='" + username + "' AND password ='" + password + "';";        
+        Statement stmt;
+        ResultSet rs;
+        Employee_DTO employeeTemp = new Employee_DTO();
+        try {            
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {                                
+                employeeTemp.setId(rs.getInt(1));
+                employeeTemp.setUsername(rs.getString(2));
+                employeeTemp.setPassword(rs.getString(3));
+                employeeTemp.setName(rs.getString(4));
+                employeeTemp.setPhoneNumber(rs.getString(5));
+                employeeTemp.setStartDate(rs.getTimestamp(6));
+                employeeTemp.setPermission(rs.getString(7));
+                employeeTemp.setSalary(rs.getInt(8));
+                return employeeTemp;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return employeeTemp;
+    }
 
     public String getName(String username, String password) {
         String sql = "SELECT name FROM employee WHERE username ='" + username + "' AND password ='" + password + "';";
@@ -56,5 +81,23 @@ public class Employee_DAO {
             Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "";
+    }
+
+    public boolean isManager(String username, String password) {
+        String sql = "SELECT permission FROM employee WHERE username ='" + username + "' AND password ='" + password + "';";
+        Statement stmt;
+        ResultSet rs;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                if (rs.getString("permission").equals("manager")) {
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 }

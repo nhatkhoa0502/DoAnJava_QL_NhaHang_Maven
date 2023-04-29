@@ -1,27 +1,36 @@
 
 package DAO;
 
-import DTO.FoodCategory_DTO;
+import DTO.Order_DTO;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Vector;
 
 public class Order_DAO {
-    private Connection conn = ConnectDB.getConnection();
-    public Vector<FoodCategory_DTO> getAllFoodCategory(){
-        Vector<FoodCategory_DTO> vectorFoodCategory = new Vector<FoodCategory_DTO>();
+    private Connection conn;
+    public Vector<Order_DTO> getAllOrder(){
+        conn = ConnectDB.getConnection();
+        Vector<Order_DTO> vectorOrder = new Vector<Order_DTO>();
         if (conn!=null) {
             try {
-                String sql = "Select * from food_category";
+                String sql = "Select * from `order`";
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
                 while (rs.next()) {
-                    FoodCategory_DTO fc = new FoodCategory_DTO();
-                    fc.setId(rs.getInt("id"));
-                    fc.setName(rs.getString("name"));                                               
-                    vectorFoodCategory.add(fc);
+                    Order_DTO or = new Order_DTO();
+                    or.setId(rs.getInt("id"));
+                    or.setIdEmployee(rs.getInt("idEmployee"));                                               
+                    or.setIdCustomer(rs.getInt("idCustomer")); 
+                    or.setIdTable(rs.getInt("idTable")); 
+                    or.setType(rs.getString("type")); 
+                    or.setStatus(rs.getString("status"));
+                    or.setOrderDate(rs.getTimestamp("orderDate"));
+                    or.setTotalAmount(rs.getInt("totalAmount")); 
+                    or.setDiscount(rs.getInt("discount"));                     
+                    vectorOrder.add(or);
                 }
             } catch (SQLException ex) {
                 System.out.println(ex);
@@ -29,6 +38,28 @@ public class Order_DAO {
                  ConnectDB.closeConnection(conn);
             }
         }
-        return vectorFoodCategory;    
+        return vectorOrder;    
+    }
+    
+    public int getNumOfOrderInTime(String startTime, String endTime){
+        conn = ConnectDB.getConnection();
+        if (conn!=null) {
+            try {
+                String sql = "SELECT COUNT(id) FROM `order` WHERE `orderDate` BETWEEN ? AND ?;";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setString(1,startTime);
+                preparedStmt.setString (2,endTime);
+                ResultSet rs = preparedStmt.executeQuery(); 
+                if(rs.next()) {   
+                    System.out.println("count: " + rs.getInt(1));
+                    return rs.getInt(1);      
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                 ConnectDB.closeConnection(conn);
+            }
+        }        
+        return 0;
     }
 }

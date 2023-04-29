@@ -1,5 +1,6 @@
 package GUI;
 
+import BUS.Order_BUS;
 import BUS.Statistical_BUS;
 import DTO.Session_DTO;
 import com.toedter.calendar.JDateChooser;
@@ -7,6 +8,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -19,15 +22,43 @@ public class Statistical_GUI extends javax.swing.JPanel {
 
     Vector<Session_DTO> vectorSession = new Vector<Session_DTO>();
     DefaultTableModel model = new DefaultTableModel();
+    Statistical_BUS sttBUS = new Statistical_BUS();
 
     public Statistical_GUI() {
         initComponents();
+        setStartEndDate();
         tblSession.setModel(model);
         setIconImg();
         setupHeader(tblProduct);
         setupHeader(tblSession);
-        renderSessionData();
+        renderAllDataSession();
         setVisible(true);
+    }
+
+    private void setStartEndDate() {
+        Date currentDate = new Date();
+        // Lấy ngày cách ngày hiện tại 15 ngày
+        long millisecondsPerDay = 24 * 60 * 60 * 1000; // 1 ngày = 24 giờ x 60 phút x 60 giây x 1000 milliseconds
+        long fifteenDaysInMilliseconds = 15 * millisecondsPerDay;
+        long fifteenDaysLaterFromNow = currentDate.getTime() + fifteenDaysInMilliseconds;
+        long fifteenDaysBeforeFromNow = currentDate.getTime() - fifteenDaysInMilliseconds;
+        Date fifteenDaysLater = new Date(fifteenDaysLaterFromNow);
+        Date fifteenDaysBefore = new Date(fifteenDaysBeforeFromNow);        
+        dateChooserStart.setDate(fifteenDaysBefore);
+        dateChooserEnd.setDate(fifteenDaysLater);
+        
+        System.out.println("Ngay 15 ngay truoc la: " + fifteenDaysBefore);
+        System.out.println("Ngay 15 ngay sau la: " + fifteenDaysLater);
+        System.out.println("millisecondsPerDay: " + millisecondsPerDay);
+        long hqua = currentDate.getTime() - millisecondsPerDay;
+        System.out.println("hom qua: " + hqua);
+        System.out.println("before: " + fifteenDaysBeforeFromNow);
+        System.out.println("now: " + currentDate.getTime());
+        System.out.println("later: " + fifteenDaysLaterFromNow);           
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateFormat = dateFormat.format(currentDate);
+        System.out.println("currentDate  format: " + currentDateFormat);
     }
 
     private void setIconImg() {
@@ -50,10 +81,12 @@ public class Statistical_GUI extends javax.swing.JPanel {
         t.getTableHeader().setForeground(new Color(255, 255, 255));
         t.setShowGrid(false);//tắt đường viền của bảng
     }
-
-    public void renderSessionData() {
-        Statistical_BUS t = new Statistical_BUS();
-        vectorSession = t.getAllSessionEmployees();
+    
+    public void addSessionDataForModel() { 
+        // xoa du lieu trong model
+        model.setRowCount(0);
+        model.setColumnCount(0);
+        
         model.addColumn("IDNV");
         model.addColumn("Tên nhân viên");
         model.addColumn("Số hóa đơn");
@@ -73,11 +106,15 @@ public class Statistical_GUI extends javax.swing.JPanel {
             nameNV = vectorSession.get(i).getNameEmployee();
             timeStart = vectorSession.get(i).getStartTime();
             timeEnd = vectorSession.get(i).getEndTime();
-            model.addRow(new Object[]{IDNV, nameNV, i, timeStart, timeEnd});
+            model.addRow(new Object[]{IDNV, nameNV, 0, timeStart, timeEnd});
         }
-
     }
-
+    
+    public void renderAllDataSession(){
+        vectorSession = sttBUS.getAllSessionEmployees();
+        addSessionDataForModel();
+    }
+    
     public void renderProductData() {
 
     }
@@ -125,6 +162,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
         dateChooserStart = new com.toedter.calendar.JDateChooser();
         jLabel3 = new javax.swing.JLabel();
         dateChooserEnd = new com.toedter.calendar.JDateChooser();
+        btnThongKe = new javax.swing.JButton();
         pnlHead = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -156,7 +194,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
         tblProduct = new javax.swing.JTable();
         jPanel16 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
         tblSession = new javax.swing.JTable();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -169,21 +207,29 @@ public class Statistical_GUI extends javax.swing.JPanel {
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("Ngày bắt đầu:");
-        jPanel14.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(511, 7, -1, -1));
+        jPanel14.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 10, -1, -1));
 
         dateChooserStart.setDateFormatString("dd/MM/yyyy");
         dateChooserStart.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         dateChooserStart.setPreferredSize(new java.awt.Dimension(150, 25));
-        jPanel14.add(dateChooserStart, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 5, -1, -1));
+        jPanel14.add(dateChooserStart, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 10, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel3.setText("Ngày kết thúc:");
-        jPanel14.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(761, 7, -1, -1));
+        jPanel14.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 10, -1, -1));
 
         dateChooserEnd.setDateFormatString("dd/MM/yyyy");
         dateChooserEnd.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         dateChooserEnd.setPreferredSize(new java.awt.Dimension(150, 25));
-        jPanel14.add(dateChooserEnd, new org.netbeans.lib.awtextra.AbsoluteConstraints(857, 5, -1, -1));
+        jPanel14.add(dateChooserEnd, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 10, -1, -1));
+
+        btnThongKe.setText("Thống kê");
+        btnThongKe.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThongKeActionPerformed(evt);
+            }
+        });
+        jPanel14.add(btnThongKe, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 10, -1, -1));
 
         jPanel13.add(jPanel14, java.awt.BorderLayout.PAGE_START);
 
@@ -225,7 +271,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel2.setText("Số HD");
+        jLabel2.setText("Số Hóa Đơn");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 0.1;
@@ -234,7 +280,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
         jPanel3.add(jLabel2, gridBagConstraints);
 
         lbTotalOrder.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbTotalOrder.setText("14");
+        lbTotalOrder.setText("0");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -289,7 +335,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
         jPanel6.add(jLabel5, gridBagConstraints);
 
         lbTotalIncome.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbTotalIncome.setText("14,000,000");
+        lbTotalIncome.setText("0");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -335,7 +381,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
         jPanel9.setLayout(new java.awt.GridBagLayout());
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel8.setText("Số NV");
+        jLabel8.setText("Số Nhân Viên");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 0.1;
@@ -344,7 +390,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
         jPanel9.add(jLabel8, gridBagConstraints);
 
         lbTotalEmployee.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbTotalEmployee.setText("33");
+        lbTotalEmployee.setText("0");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -390,7 +436,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
         jPanel12.setLayout(new java.awt.GridBagLayout());
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel11.setText("Số KH");
+        jLabel11.setText("Số Sản Phẩm");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 0.1;
@@ -399,7 +445,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
         jPanel12.add(jLabel11, gridBagConstraints);
 
         lbTotalCustomer.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbTotalCustomer.setText("10+");
+        lbTotalCustomer.setText("0");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -451,8 +497,6 @@ public class Statistical_GUI extends javax.swing.JPanel {
         jLabel12.setText("Thống kê phiên làm việc");
         jPanel16.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
 
-        jScrollPane2.setPreferredSize(new java.awt.Dimension(452, 1));
-
         tblSession.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -464,11 +508,10 @@ public class Statistical_GUI extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tblSession.setPreferredSize(new java.awt.Dimension(452, 1000));
         tblSession.setRowHeight(25);
-        jScrollPane2.setViewportView(tblSession);
+        jScrollPane1.setViewportView(tblSession);
 
-        jPanel16.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 500, 470));
+        jPanel16.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 500, 470));
 
         pnlContent.add(jPanel16);
         jPanel16.setBounds(6, 0, 500, 640);
@@ -476,7 +519,19 @@ public class Statistical_GUI extends javax.swing.JPanel {
         add(pnlContent, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 1022, 609));
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnThongKeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThongKeActionPerformed
+        Order_BUS orderBUS = new Order_BUS();
+        Date startTime = dateChooserStart.getDate();
+        Date endTime = dateChooserEnd.getDate();
+        System.out.println("date start: " + dateChooserStart.getDate());
+        vectorSession = sttBUS.statisticalByTime(startTime,endTime );
+        addSessionDataForModel();
+        int countOrder = orderBUS.getNumOfOrderInTime(startTime, endTime);
+        lbTotalOrder.setText("" + countOrder); 
+    }//GEN-LAST:event_btnThongKeActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnThongKe;
     private com.toedter.calendar.JDateChooser dateChooserEnd;
     private com.toedter.calendar.JDateChooser dateChooserStart;
     private javax.swing.JLabel jLabel11;
@@ -503,7 +558,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lbTotalCustomer;
     private javax.swing.JLabel lbTotalEmployee;
     private javax.swing.JLabel lbTotalIncome;

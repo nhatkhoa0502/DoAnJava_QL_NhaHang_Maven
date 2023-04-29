@@ -14,6 +14,14 @@ public class Employee_BUS {
         return emd.getAllEmployee();
     } 
     
+    public Employee_DTO getEmployeeByUsrPass(String username, String password){
+        return emd.getEmployeeByUsrPass(username,password);
+    }
+    
+    public boolean isManager(String username,String password){
+        return emd.isManager(username, password);
+    }
+    
     public boolean checkLogin(String username, String password){
         System.out.println("usr; "+username);
         System.out.println("pass: "+password);

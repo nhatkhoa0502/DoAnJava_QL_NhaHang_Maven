@@ -1,7 +1,7 @@
 
 package DAO;
 
-import DTO.FoodCategory_DTO;
+import DTO.Customer_DTO;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,18 +10,19 @@ import java.util.Vector;
 
 public class Customer_DAO {
     private Connection conn = ConnectDB.getConnection();
-    public Vector<FoodCategory_DTO> getAllFoodCategory(){
-        Vector<FoodCategory_DTO> vectorFoodCategory = new Vector<FoodCategory_DTO>();
+    public Vector<Customer_DTO> getAllCustomer(){
+        Vector<Customer_DTO> vectorCustomer = new Vector<Customer_DTO>();
         if (conn!=null) {
             try {
-                String sql = "Select * from food_category";
+                String sql = "Select * from customer";
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
                 while (rs.next()) {
-                    FoodCategory_DTO fc = new FoodCategory_DTO();
-                    fc.setId(rs.getInt("id"));
-                    fc.setName(rs.getString("name"));                                               
-                    vectorFoodCategory.add(fc);
+                    Customer_DTO ctm = new Customer_DTO();
+                    ctm.setId(rs.getInt("id"));
+                    ctm.setName(rs.getString("name"));                                               
+                    ctm.setPhoneNumber(rs.getString("phoneNumber"));
+                    vectorCustomer.add(ctm);
                 }
             } catch (SQLException ex) {
                 System.out.println(ex);
@@ -29,6 +30,6 @@ public class Customer_DAO {
                  ConnectDB.closeConnection(conn);
             }
         }
-        return vectorFoodCategory;    
+        return vectorCustomer;    
     }
 }
