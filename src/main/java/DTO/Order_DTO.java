@@ -5,13 +5,31 @@ import java.sql.Timestamp;
 
 
 public class Order_DTO {
-    private int id, idEmployee, idCustomer, idTable, totalAmount, discount;
+    private int id, idEmployee, idCustomer, idTable, totalAmount, discount, cash, change;
     private String type, status;    
     private Timestamp orderDate;
 
     public Order_DTO() {
     }
 
+    public int getCash() {
+        return cash;
+    }
+
+    public int getChange() {
+        return change;
+    }
+
+    public void setCash(int cash) {
+        this.cash = cash;
+    }
+
+    public void setChange(int change) {
+        this.change = change;
+    }
+
+    
+    
     public int getId() {
         return id;
     }

@@ -41,16 +41,32 @@ public class Employee_DAO {
         }
         return vectorEmployee;
     }
-    
-    public Employee_DTO getEmployeeByUsrPass(String username, String password){
-        String sql = "SELECT * FROM employee WHERE username ='" + username + "' AND password ='" + password + "';";        
+
+    public String getName(int id) {
+        String sql = "SELECT name FROM employee WHERE id = " + id + ";";
+        Statement stmt;
+        ResultSet rs;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                return rs.getString("name");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
+    }
+
+    public Employee_DTO getEmployeeByUsrPass(String username, String password) {
+        String sql = "SELECT * FROM employee WHERE username ='" + username + "' AND password ='" + password + "';";
         Statement stmt;
         ResultSet rs;
         Employee_DTO employeeTemp = new Employee_DTO();
-        try {            
+        try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
-            if (rs.next()) {                                
+            if (rs.next()) {
                 employeeTemp.setId(rs.getInt(1));
                 employeeTemp.setUsername(rs.getString(2));
                 employeeTemp.setPassword(rs.getString(3));
@@ -76,6 +92,25 @@ public class Employee_DAO {
             rs = stmt.executeQuery(sql);
             if (rs.next()) {
                 return rs.getString("name");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
+    }
+    
+    public String getName(String username) {
+        System.out.println("ursname DAO; " + username);
+        String sql = "SELECT name FROM `employee` WHERE `username` = '" + username + "';";
+        Statement stmt;
+        ResultSet rs;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                String name = rs.getString("name");
+                System.out.println("employee name DAO: " + name);
+                return name;
             }
         } catch (SQLException ex) {
             Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);

@@ -29,7 +29,9 @@ public class Order_DAO {
                     or.setStatus(rs.getString("status"));
                     or.setOrderDate(rs.getTimestamp("orderDate"));
                     or.setTotalAmount(rs.getInt("totalAmount")); 
-                    or.setDiscount(rs.getInt("discount"));                     
+                    or.setDiscount(rs.getInt("discount")); 
+                    or.setCash(rs.getInt("cash"));
+                    or.setChange(rs.getInt("change"));
                     vectorOrder.add(or);
                 }
             } catch (SQLException ex) {
@@ -52,6 +54,25 @@ public class Order_DAO {
                 ResultSet rs = preparedStmt.executeQuery(); 
                 if(rs.next()) {   
                     System.out.println("count: " + rs.getInt(1));
+                    return rs.getInt(1);      
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                 ConnectDB.closeConnection(conn);
+            }
+        }        
+        return 0;
+    }
+    
+    public int getMaxIdOrder(){
+        conn = ConnectDB.getConnection();
+        if (conn!=null) {
+            try {
+                String sql = "SELECT MAX(id) FROM `order`;";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);                
+                if(rs.next()) {                       
                     return rs.getInt(1);      
                 }
             } catch (SQLException ex) {

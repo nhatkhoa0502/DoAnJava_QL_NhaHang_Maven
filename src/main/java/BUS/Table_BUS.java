@@ -13,4 +13,12 @@ public class Table_BUS {
     public Vector<Table_DTO> getAllTable(){        
         return tbd.getAllTable();
     }       
+    
+    public Vector<Table_DTO> getTableFree(){
+        return tbd.getTableFree();
+    }
+    
+    public String getName(int id){
+        return tbd.getName(id);
+    }
 }

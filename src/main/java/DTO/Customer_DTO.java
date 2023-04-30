@@ -6,9 +6,20 @@ import java.sql.Timestamp;
 public class Customer_DTO {
     private int id;
     private String phoneNumber, name;
+    Timestamp dateCreate;
+    
     public Customer_DTO() {
     }
 
+    public Timestamp getDateCreate() {
+        return dateCreate;
+    }
+
+    public void setDateCreate(Timestamp dateCreate) {
+        this.dateCreate = dateCreate;
+    }
+    
+    
     public int getId() {
         return id;
     }

@@ -31,11 +31,31 @@ import javax.swing.table.DefaultTableModel;
 public class Manager_GUI extends JPanel {
 
     DefaultTableModel model = new DefaultTableModel();
+    Vector<MenuItem> vectorMenuItem;
+    String username;
 
-    public Manager_GUI() {
+    public Manager_GUI(Vector<MenuItem> vectorMenuItem,String username) {
+        this.username = username;
+        System.out.println("managerGUI username: " + username);
+        this.vectorMenuItem = vectorMenuItem;
         initComponents();
         settingTable();
-        setIconForButton();        
+        setIconForButton();
+    }
+    public Manager_GUI() {
+        this.vectorMenuItem = vectorMenuItem;
+        initComponents();
+        settingTable();
+        setIconForButton();
+    }
+
+    private MenuItem getMenuItemActive() {
+        for (int i = 0; i < vectorMenuItem.size(); i++) {
+            if (vectorMenuItem.get(i).isActive()) {
+                return vectorMenuItem.get(i);
+            }
+        }
+        return vectorMenuItem.get(0);
     }
 
     private void settingTable() {
@@ -155,11 +175,10 @@ public class Manager_GUI extends JPanel {
         for (int i = 0; i < vectorTable.size(); i++) {
             id = vectorTable.get(i).getId();
             name = vectorTable.get(i).getName();
-            status = vectorTable.get(i).getStatus().equals("free") ? "Trống" : "Đang phục vụ" ; 
+            status = vectorTable.get(i).getStatus().equals("free") ? "Trống" : "Đang phục vụ";
             model.addRow(new Object[]{id, name, status});
         }
     }
-    //-----------------------------------------------------------------------------------------------------------------   
 
     public void renderCustomer() {
         // xoa du lieu trong model
@@ -172,16 +191,18 @@ public class Manager_GUI extends JPanel {
         model.addColumn("ID");
         model.addColumn("Tên");
         model.addColumn("SĐT");
-        model.addColumn("Số đơn hàng");
+        model.addColumn("Ngày tạo");
 
         int id;
         String name, phoneNumber;
+        Timestamp dateCreate;
         for (int i = 0; i < vectorCustomer.size(); i++) {
 //            đếm số đơn hàng trong bảng order....
             id = vectorCustomer.get(i).getId();
             name = vectorCustomer.get(i).getName();
             phoneNumber = vectorCustomer.get(i).getPhoneNumber();
-            model.addRow(new Object[]{id, name, phoneNumber});
+            dateCreate = vectorCustomer.get(i).getDateCreate();
+            model.addRow(new Object[]{id, name, phoneNumber, dateCreate});
         }
     }
 
@@ -192,38 +213,48 @@ public class Manager_GUI extends JPanel {
 
         Vector<Order_DTO> vectorOrder = new Vector<>();
         Order_BUS t = new Order_BUS();
+        Employee_BUS employeeBUS = new Employee_BUS();
+        Customer_BUS customerBUS = new Customer_BUS();
+        Table_BUS tableBUS = new Table_BUS();
+
         vectorOrder = t.getAllOrder();
-        model.addColumn("ID");        
-        model.addColumn("IDNV");
-        model.addColumn("IDKH");
-        model.addColumn("ID bàn");
+        model.addColumn("ID");
+        model.addColumn("Tên NV");
+        model.addColumn("Tên KH");
+        model.addColumn("Tên bàn");
         model.addColumn("Loại");
         model.addColumn("Ngày lập HĐ");
-        model.addColumn("Trạng thái");        
+        model.addColumn("Trạng thái");
         model.addColumn("Giảm giá (%)");
         model.addColumn("Tổng tiền");
-        
-        tblData.getColumnModel().getColumn(0).setPreferredWidth(10);
-        tblData.getColumnModel().getColumn(1).setPreferredWidth(10);
-        tblData.getColumnModel().getColumn(2).setPreferredWidth(10);
-        tblData.getColumnModel().getColumn(3).setPreferredWidth(10);
+        model.addColumn("Tiền KH đưa");
+        model.addColumn("Tiền thối");
 
-        int id, idEmployee, idCustomer, idTable, totalAmount, discount;
-        String type, status;
+//        tblData.getColumnModel().getColumn(0).setPreferredWidth(10);
+//        tblData.getColumnModel().getColumn(1).setPreferredWidth(10);
+//        tblData.getColumnModel().getColumn(2).setPreferredWidth(10);
+//        tblData.getColumnModel().getColumn(3).setPreferredWidth(10);
+        int id, idEmployee, idCustomer, idTable, totalAmount, discount, cash, change;
+        String type, status, nameEmployee, nameCustomer, nameTable;
         Timestamp orderDate;
         for (int i = 0; i < vectorOrder.size(); i++) {
             id = vectorOrder.get(i).getId();
             idEmployee = vectorOrder.get(i).getIdEmployee();
+            nameEmployee = employeeBUS.getName(idEmployee);
             idCustomer = vectorOrder.get(i).getIdCustomer();
+            nameCustomer = customerBUS.getName(idCustomer);
             idTable = vectorOrder.get(i).getIdTable();
+            nameTable = tableBUS.getName(idTable);
             type = vectorOrder.get(i).getType().equals("takeaway") ? "Mang về" : "Tại quán";
             status = vectorOrder.get(i).getStatus().equals("paid") ? "Đã thanh toán" : "Bị hủy";
             orderDate = vectorOrder.get(i).getOrderDate();
             discount = vectorOrder.get(i).getDiscount();
             totalAmount = vectorOrder.get(i).getTotalAmount();
-            model.addRow(new Object[]{id, idEmployee, idCustomer, idTable, type, orderDate, status, discount, totalAmount});
+            cash = vectorOrder.get(i).getCash();
+            change = vectorOrder.get(i).getChange();
+            model.addRow(new Object[]{id, nameEmployee, nameCustomer, nameTable, type, orderDate, status, discount, totalAmount, cash, change});
         }
-    }    
+    }
 
     public void renderStatistical() {
         // xoa du lieu trong model
@@ -231,7 +262,6 @@ public class Manager_GUI extends JPanel {
         model.setColumnCount(0);
 
     }
-//-----------------------------------------------------------------------------------------------------------------
 
     public JComboBox<String> getCboSearchField() {
         return cboSearchField;
@@ -360,6 +390,11 @@ public class Manager_GUI extends JPanel {
 
         btnAdd.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnAdd.setText("Thêm");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -389,6 +424,16 @@ public class Manager_GUI extends JPanel {
 
         add(jPanel2, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        String menuItemActive = getMenuItemActive().getId();
+
+        switch (menuItemActive) {
+            case "qlddh":
+                new OrderDetail_GUI(username).setVisible(true);
+                break;
+        }
+    }//GEN-LAST:event_btnAddActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;

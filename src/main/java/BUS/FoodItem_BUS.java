@@ -7,8 +7,18 @@ import java.util.Vector;
 
 
 public class FoodItem_BUS {
-    public Vector<FoodItem_DTO> getAllFoodItem(){
-        FoodItem_DAO t = new FoodItem_DAO();
-        return t.getAllFoodItem();
+    FoodItem_DAO foodItemDAO = new FoodItem_DAO();
+    
+    public Vector<FoodItem_DTO> getAllFoodItem(){        
+        return foodItemDAO.getAllFoodItem();
     }
+    
+    public String getName(int id){
+        return foodItemDAO.getName(id);
+    }
+    
+    public int getPrice(int id){
+        return foodItemDAO.getPrice(id);
+    }
+    
 }

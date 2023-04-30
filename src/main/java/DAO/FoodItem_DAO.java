@@ -11,8 +11,10 @@ import java.util.Vector;
 
 
 public class FoodItem_DAO {
-    private Connection conn = ConnectDB.getConnection();
+    private Connection conn;
+    
     public Vector<FoodItem_DTO> getAllFoodItem(){
+        conn = ConnectDB.getConnection();
         Vector<FoodItem_DTO> vectorFoodCategory = new Vector<FoodItem_DTO>();
         if (conn!=null) {
             try {
@@ -37,5 +39,43 @@ public class FoodItem_DAO {
             }
         }
         return vectorFoodCategory;    
+    }
+    
+    public int getPrice(int id){
+        conn = ConnectDB.getConnection();        
+        if (conn!=null) {
+            try {
+                String sql = "Select unitPrice from food_item where id = "+id+";";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                while (rs.next()) {
+                    return rs.getInt(1);                                
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                 ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;  
+    }
+    
+    public String getName(int id){
+        conn = ConnectDB.getConnection();        
+        if (conn!=null) {
+            try {
+                String sql = "Select name from food_item where id = "+id+";";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                while (rs.next()) {
+                    return rs.getString(1);                                
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                 ConnectDB.closeConnection(conn);
+            }
+        }
+        return "";            
     }
 }

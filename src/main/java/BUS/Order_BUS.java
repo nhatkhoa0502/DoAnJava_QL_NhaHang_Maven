@@ -21,4 +21,8 @@ public class Order_BUS {
         String endDateFormat = dateFormat.format(endTime);
         return orDAO.getNumOfOrderInTime(startDateFormat, endDateFormat);        
     }
+    
+    public int getMaxIdOrder(){
+        return orDAO.getMaxIdOrder();
+    }
 }

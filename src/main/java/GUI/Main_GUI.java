@@ -23,7 +23,7 @@ public class Main_GUI extends javax.swing.JFrame {
     private String password;
 
     private Vector<MenuItem> vectorMenuItem = new Vector<>();
-    private Manager_GUI managerGUI = new Manager_GUI();
+    private Manager_GUI managerGUI;
     private Statistical_GUI statiscalGUI = new Statistical_GUI();
     private Employee_BUS employeeBUS = new Employee_BUS();
     private Statistical_BUS statisticalBUS = new Statistical_BUS();
@@ -33,6 +33,7 @@ public class Main_GUI extends javax.swing.JFrame {
         
         this.username = username;
         this.password = password;
+        managerGUI = new Manager_GUI(vectorMenuItem,username);
         
         initComponents();
         addMenuItem();
@@ -49,7 +50,8 @@ public class Main_GUI extends javax.swing.JFrame {
 
         setVisible(true);
     }
-
+    
+    
     private void addName() {
         lbName.setText(employeeBUS.getName(username, password));
     }
@@ -76,9 +78,9 @@ public class Main_GUI extends javax.swing.JFrame {
         if (employeeBUS.isManager(username, password)) {
             vectorMenuItem.add(new MenuItem("qlnv", iconQLNV, "Quản lý nhân viên"));
             vectorMenuItem.add(new MenuItem("qllm", iconLoaiMon, "Quản lý loại món"));
-            vectorMenuItem.add(new MenuItem("qlma", iconMonAn, "Quản lý món ăn"));
-            vectorMenuItem.add(new MenuItem("qlb", iconBan, "Quản lý bàn"));            
+            vectorMenuItem.add(new MenuItem("qlma", iconMonAn, "Quản lý món ăn"));                        
         }
+        vectorMenuItem.add(new MenuItem("qlb", iconBan, "Quản lý bàn"));
         vectorMenuItem.add(new MenuItem("qlkh", iconKH, "Quản lý khách hàng"));
         vectorMenuItem.add(new MenuItem("qlddh", iconDDH, "Quản lý đơn đặt hàng"));
         if (employeeBUS.isManager(username, password)) {
@@ -169,11 +171,7 @@ public class Main_GUI extends javax.swing.JFrame {
             vectorMenuItem.get(i).setActive(false);
         }
     }
-
-    public void showMessage(String message) {
-        JOptionPane.showMessageDialog(this, message);
-    }
-
+  
     public JButton getBtnLogout() {
         return btnLogout;
     }

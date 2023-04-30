@@ -11,4 +11,8 @@ public class Customer_BUS {
     public Vector<Customer_DTO> getAllCustomer(){        
         return ctmDAO.getAllCustomer();
     } 
+    
+    public String getName(int id){
+        return ctmDAO.getName(id);
+    }
 }
