@@ -1,11 +1,12 @@
 package GUI;
 
 import DTO.FoodCategory_DTO;
+import javax.swing.JLabel;
 
 public class FoodCategoryPane extends javax.swing.JPanel {
 
     FoodCategory_DTO foodCategory;
-
+          
     public FoodCategoryPane(FoodCategory_DTO fc) {
         this.foodCategory = fc;
         initComponents();

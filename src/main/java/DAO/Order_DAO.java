@@ -7,10 +7,41 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Vector;
 
 public class Order_DAO {
     private Connection conn;
+    
+    public void insertData(Order_DTO o){
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "insert into `order`(idEmployee, idCustomer, idTable, type, status, orderDate, discount, totalAmount, cash, `change`) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setInt(1, o.getIdEmployee());
+                if(o.getIdCustomer()!=0){
+                    preparedStmt.setInt(2, o.getIdCustomer());
+                }else{
+                    preparedStmt.setNull(2, Types.INTEGER);
+                }
+                preparedStmt.setInt(3, o.getIdTable());
+                preparedStmt.setString(4, o.getType());
+                preparedStmt.setString(5, o.getStatus());
+                preparedStmt.setTimestamp(6, o.getOrderDate());
+                preparedStmt.setInt(7, o.getDiscount());
+                preparedStmt.setInt(8, o.getTotalAmount());
+                preparedStmt.setInt(9, o.getCash());
+                preparedStmt.setInt(10, o.getChange());     
+                preparedStmt.execute();
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+    }
+    
     public Vector<Order_DTO> getAllOrder(){
         conn = ConnectDB.getConnection();
         Vector<Order_DTO> vectorOrder = new Vector<Order_DTO>();

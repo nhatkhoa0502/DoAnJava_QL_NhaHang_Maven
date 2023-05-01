@@ -28,6 +28,11 @@ public class Order_DTO {
         this.change = change;
     }
 
+    @Override
+    public String toString() {
+        return "Order_DTO{" + "id=" + id + ", idEmployee=" + idEmployee + ", idCustomer=" + idCustomer + ", idTable=" + idTable + ", totalAmount=" + totalAmount + ", discount=" + discount + ", cash=" + cash + ", change=" + change + ", type=" + type + ", status=" + status + ", orderDate=" + orderDate + '}';
+    }
+
     
     
     public int getId() {

@@ -18,7 +18,14 @@ public class FoodItem_DTO {
         this.unitPrice = unitPrice;
         this.idCategory = idCategory;
     }
+
+    @Override
+    public String toString() {
+        return "FoodItem_DTO{" + "id=" + id + ", name=" + name + ", description=" + description + ", urlImage=" + urlImage + ", unitName=" + unitName + ", unitPrice=" + unitPrice + ", idCategory=" + idCategory + '}';
+    }
     
+    
+            
     public int getId() {
         return id;
     }

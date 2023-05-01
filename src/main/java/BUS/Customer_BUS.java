@@ -12,7 +12,21 @@ public class Customer_BUS {
         return ctmDAO.getAllCustomer();
     } 
     
+    public int getId(String phoneNumber){
+        return ctmDAO.getId(phoneNumber);
+    }
+    
+    public int getMaxId(){
+        return ctmDAO.getMaxId();
+    }
+    
+    public void insert(String name,String phone){
+        ctmDAO.insert(name,phone);
+    }
+    
     public String getName(int id){
         return ctmDAO.getName(id);
     }
+    
+    
 }

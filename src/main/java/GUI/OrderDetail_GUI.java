@@ -1,5 +1,6 @@
 package GUI;
 
+import BUS.Customer_BUS;
 import BUS.Employee_BUS;
 import BUS.FoodCategory_BUS;
 import BUS.FoodItem_BUS;
@@ -7,20 +8,33 @@ import BUS.Order_BUS;
 import BUS.Table_BUS;
 import DTO.FoodCategory_DTO;
 import DTO.FoodItem_DTO;
+import DTO.Order_DTO;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import DTO.Table_DTO;
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 
 public class OrderDetail_GUI extends javax.swing.JFrame {
 
     Vector<Table_DTO> vectorTable = new Vector<Table_DTO>();
+    Vector<FoodCategory_DTO> vectorFoodCategory = new Vector<FoodCategory_DTO>();
     Vector<FoodCategoryPane> vectorFoodCategoryPane = new Vector<FoodCategoryPane>();
+    Vector<FoodItem_DTO> vectorFoodItem = new Vector<FoodItem_DTO>();
     Vector<FoodItemPane> vectorFoodItemPane = new Vector<FoodItemPane>();
-    Table_BUS tableBUS = new Table_BUS();
+    Vector<FoodItem_DTO> vectorFoodItemOrder = new Vector<FoodItem_DTO>();
+
+    Order_DTO dataOrder = new Order_DTO();
+    Order_BUS orderBUS = new Order_BUS();
+    
     String username;
 
     public OrderDetail_GUI(String username) {
@@ -29,11 +43,104 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         addComboBoxTable();
         addType();
-        addFoodCategory();
-        addFoodItem();
+        addFoodCategoryPanel();
         addEmployeeName();
         addMaxIdOrder();
-//        pnlOrderItem.add(new OrderItemPanel(new OrderItem_DTO(1,1,10,"")));
+        addAllFoodItemPane();
+        addEventForFoodCategoryPanel();
+    }
+    
+    private void initDataOrder(){
+        Employee_BUS emBUS = new Employee_BUS();
+        dataOrder.setIdEmployee(emBUS.getId(username)); 
+        int idTable = vectorTable.get(cboTable.getSelectedIndex()).getId();
+        dataOrder.setIdTable(idTable);
+        int total = Integer.parseInt(lbTotalAmount.getText());
+        dataOrder.setTotalAmount(total); 
+        int disCount = Integer.parseInt(lbDiscount.getText());
+        dataOrder.setDiscount(disCount); 
+        String type = cboType.getSelectedIndex() == 0 ? "here" : "takeaway";
+        dataOrder.setType(type);
+        Date now = new Date();						
+	Timestamp orderDate = new Timestamp(now.getTime());
+        dataOrder.setOrderDate(orderDate);        
+    }
+
+    private double sumMoney() {
+        int sum = 0;
+        dataOrder.setDiscount(Integer.parseInt(spnDiscount.getValue().toString()));
+        double disCount = Double.parseDouble(spnDiscount.getValue().toString());
+        disCount = disCount / 100;
+        System.out.println("giam gia: " + disCount);
+        for (int i = 0; i < vectorFoodItemOrder.size(); i++) {
+            sum += vectorFoodItemOrder.get(i).getUnitPrice();
+        }
+        return sum - (sum * disCount);
+    }
+
+    private void addFoodItemPane() {
+        pnlFoodItem.removeAll();
+        FoodItemPane temp;
+        for (int i = 0; i < vectorFoodItem.size(); i++) {
+            System.out.println("test: " + vectorFoodItem.get(i));
+            temp = new FoodItemPane(vectorFoodItem.get(i));
+            vectorFoodItemPane.add(temp);
+            pnlFoodItem.add(temp);
+        }
+        pnlFoodItem.setVisible(false);
+        pnlFoodItem.setVisible(true);
+        addEventForVectorFoodItemPane();
+    }
+
+    private void addFoodItemPane(int id) {
+        pnlFoodItem.removeAll();
+        FoodItemPane temp;
+        for (int i = 0; i < vectorFoodItem.size(); i++) {
+            if (vectorFoodItem.get(i).getIdCategory() == id) {
+                System.out.println("test: " + vectorFoodItem.get(i));
+                temp = new FoodItemPane(vectorFoodItem.get(i));
+                vectorFoodItemPane.add(temp);
+                pnlFoodItem.add(temp);
+            }
+        }
+        pnlFoodItem.setVisible(false);
+        pnlFoodItem.setVisible(true);
+        addEventForVectorFoodItemPane();
+    }
+
+    private void addAllFoodItemPane() {
+        FoodItem_BUS foodItemBUS = new FoodItem_BUS();
+        vectorFoodItem = foodItemBUS.getAllFoodItem();
+        addFoodItemPane();
+    }
+
+    private void addEventForFoodCategoryPanel() {
+        for (int i = 0; i < vectorFoodCategoryPane.size(); i++) {
+            final int temp = i;
+            vectorFoodCategoryPane.get(i).addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    FoodCategory_DTO t = vectorFoodCategoryPane.get(temp).getFoodCategory();
+                    addFoodItemPane(t.getId());
+                }
+            });
+        }
+    }
+
+    private void addEventForVectorFoodItemPane() {
+        for (int i = 0; i < vectorFoodItemPane.size(); i++) {
+            final int temp = i;
+            vectorFoodItemPane.get(i).addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    FoodItem_DTO t = vectorFoodItemPane.get(temp).getFoodItem();
+                    vectorFoodItemOrder.add(t);
+                    pnlOrderItem.add(new OrderItemPanel(t));
+                    pnlOrderItem.setVisible(false);
+                    pnlOrderItem.setVisible(true);
+                }
+            });
+        }
     }
 
     private void addMaxIdOrder() {
@@ -51,7 +158,8 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
     }
 
     private void addComboBoxTable() {
-        vectorTable = tableBUS.getTableFree();
+        Table_BUS tableBUS = new Table_BUS();
+        vectorTable = tableBUS.getTableFree();        
         for (int i = 0; i < vectorTable.size(); i++) {
             cboTable.addItem(vectorTable.get(i).getName());
         }
@@ -62,26 +170,14 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         cboType.addItem("Mang về");
     }
 
-    private void addFoodCategory() {
+    private void addFoodCategoryPanel() {
         FoodCategory_BUS fcBUS = new FoodCategory_BUS();
-        Vector<FoodCategory_DTO> vectorFC = fcBUS.getAllFoodCategory();
+        vectorFoodCategory = fcBUS.getAllFoodCategory();
         FoodCategoryPane temp;
-        for (int i = 0; i < vectorFC.size(); i++) {
-            temp = new FoodCategoryPane(vectorFC.get(i));
+        for (int i = 0; i < vectorFoodCategory.size(); i++) {
+            temp = new FoodCategoryPane(vectorFoodCategory.get(i));
             vectorFoodCategoryPane.add(temp);
             pnlFoodCategory.add(temp);
-        }
-    }
-
-    private void addFoodItem() {
-        FoodItem_BUS foodItemBUS = new FoodItem_BUS();
-        Vector<FoodItem_DTO> vectorFoodItem = foodItemBUS.getAllFoodItem();
-        FoodItemPane temp;
-        for (int i = 0; i < vectorFoodItem.size(); i++) {
-            System.out.println("test: " + vectorFoodItem.get(i));
-            temp = new FoodItemPane(vectorFoodItem.get(i));
-            vectorFoodItemPane.add(temp);
-            pnlFoodItem.add(temp);
         }
     }
 
@@ -112,18 +208,14 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         btnCancel = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         lbTotalAmount = new javax.swing.JLabel();
-        lbFinalAmount = new javax.swing.JLabel();
         lbDiscount = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        lbPaidAmount = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
+        lbCustomerName = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
         lbStatus = new javax.swing.JLabel();
         pnlRight = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
@@ -202,6 +294,11 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(spnDiscount, gridBagConstraints);
 
+        cboTable.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboTableActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -253,147 +350,82 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btnOK.setText("Lưu");
+        btnOK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOKActionPerformed(evt);
+            }
+        });
         jPanel4.add(btnOK, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 82, 109, -1));
 
         btnInforCustomer.setText("Thông tin KH");
+        btnInforCustomer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInforCustomerActionPerformed(evt);
+            }
+        });
         jPanel4.add(btnInforCustomer, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 49, 109, -1));
 
         btnPaid.setText("Thanh Toán");
+        btnPaid.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPaidActionPerformed(evt);
+            }
+        });
         jPanel4.add(btnPaid, new org.netbeans.lib.awtextra.AbsoluteConstraints(129, 49, 111, -1));
 
         btnCancel.setText("Hủy Hóa Đơn");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
         jPanel4.add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(129, 82, 111, -1));
 
-        pnlLeft.add(jPanel4, java.awt.BorderLayout.PAGE_END);
-
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Thông tin hóa đơn"));
-        jPanel5.setLayout(new java.awt.GridBagLayout());
+        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel7.setText("Tổng:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(jLabel7, gridBagConstraints);
-
-        jLabel8.setText("Đã Thanh Toán:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(jLabel8, gridBagConstraints);
+        jPanel5.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 73, -1, -1));
 
         jLabel9.setText("Giảm Giá:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(jLabel9, gridBagConstraints);
+        jPanel5.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 103, -1, -1));
 
         lbTotalAmount.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbTotalAmount.setForeground(new java.awt.Color(255, 0, 0));
-        lbTotalAmount.setText("1000,000,000");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(lbTotalAmount, gridBagConstraints);
-
-        lbFinalAmount.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbFinalAmount.setForeground(new java.awt.Color(255, 0, 0));
-        lbFinalAmount.setText("1020,000,000");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(lbFinalAmount, gridBagConstraints);
+        lbTotalAmount.setText("0");
+        jPanel5.add(lbTotalAmount, new org.netbeans.lib.awtextra.AbsoluteConstraints(96, 71, -1, -1));
 
         lbDiscount.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbDiscount.setForeground(new java.awt.Color(255, 0, 0));
         lbDiscount.setText("0");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(lbDiscount, gridBagConstraints);
+        jPanel5.add(lbDiscount, new org.netbeans.lib.awtextra.AbsoluteConstraints(96, 101, -1, -1));
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel13.setText("VND");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(jLabel13, gridBagConstraints);
-
-        jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel14.setText("VND");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(jLabel14, gridBagConstraints);
+        jPanel5.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 70, -1, -1));
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel15.setText("%");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(jLabel15, gridBagConstraints);
+        jPanel5.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 101, -1, -1));
 
-        jLabel10.setText("Phải Trả");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(jLabel10, gridBagConstraints);
+        jLabel18.setText("Tên khách hàng: ");
+        jPanel5.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, -1, -1));
 
-        lbPaidAmount.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lbPaidAmount.setForeground(new java.awt.Color(255, 0, 0));
-        lbPaidAmount.setText("1020,000,000");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(lbPaidAmount, gridBagConstraints);
+        lbCustomerName.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lbCustomerName.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel5.add(lbCustomerName, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 130, 110, 20));
 
-        jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel16.setText("VND");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(jLabel16, gridBagConstraints);
-
-        jLabel18.setText("Trạng thái:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(jLabel18, gridBagConstraints);
+        jLabel19.setText("Trạng thái:");
+        jPanel5.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 43, -1, -1));
 
         lbStatus.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbStatus.setForeground(new java.awt.Color(255, 0, 0));
         lbStatus.setText("Chưa thanh toán");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel5.add(lbStatus, gridBagConstraints);
+        jPanel5.add(lbStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(96, 41, -1, -1));
 
-        pnlLeft.add(jPanel5, java.awt.BorderLayout.CENTER);
+        jPanel4.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 240, 170));
+
+        pnlLeft.add(jPanel4, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(pnlLeft, java.awt.BorderLayout.LINE_START);
 
@@ -481,6 +513,62 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnPaidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaidActionPerformed
+        int sumMoney = (int) sumMoney();
+        String numStr = JOptionPane.showInputDialog("Thành tiền: " + sumMoney + "\nNhập số tiền khách đưa: ");
+        if (numStr != "") {
+            int cash = Integer.parseInt(numStr);
+            String mess = "Thành tiền: " + sumMoney + "\nKhách trả: " + cash + "\nTiền thối: " + (cash - sumMoney);
+            JOptionPane.showMessageDialog(null, mess, "Thanh Toán", JOptionPane.INFORMATION_MESSAGE);
+            dataOrder.setCash(cash);
+            dataOrder.setChange(cash-sumMoney);
+            dataOrder.setType("paid");
+            lbStatus.setText("Đã thanh toán");
+            lbStatus.setForeground(Color.GREEN);
+            lbTotalAmount.setText(sumMoney + "");
+            lbDiscount.setText(dataOrder.getDiscount() + "");
+        }
+    }//GEN-LAST:event_btnPaidActionPerformed
+
+    private void btnInforCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInforCustomerActionPerformed
+        String phoneNumberCustomer = JOptionPane.showInputDialog("Nhập SĐT khách hàng: ");
+        if (phoneNumberCustomer != null) {
+            Customer_BUS t = new Customer_BUS();
+            if (t.getId(phoneNumberCustomer) == 0) {
+                String nameCustomer = JOptionPane.showInputDialog("Nhập tên khách hàng: ");
+                lbCustomerName.setText(nameCustomer); 
+                t.insert(nameCustomer, phoneNumberCustomer);
+                dataOrder.setIdCustomer(t.getMaxId());
+                System.out.println("data order id customer: " + dataOrder.getIdCustomer());
+            } else {
+                int id = t.getId(phoneNumberCustomer);
+                dataOrder.setIdCustomer(id);
+                lbCustomerName.setText(t.getName(id));
+                System.out.println("data order id customer: " + dataOrder.getIdCustomer());
+            }
+        }
+    }//GEN-LAST:event_btnInforCustomerActionPerformed
+
+    private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
+        initDataOrder();    
+        dataOrder.setStatus("paid"); 
+        System.out.println("data order: " + dataOrder.toString());
+        orderBUS.insertData(dataOrder);
+        setVisible(false); 
+    }//GEN-LAST:event_btnOKActionPerformed
+
+    private void cboTableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboTableActionPerformed
+        System.out.println("combox box selected: "+cboTable.getSelectedIndex());
+        System.out.println("vector combox box selected: "+ vectorTable.get(cboTable.getSelectedIndex()).getName());
+    }//GEN-LAST:event_cboTableActionPerformed
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        initDataOrder();
+        dataOrder.setStatus("cancel");
+        orderBUS.insertData(dataOrder);   
+        setVisible(false);
+    }//GEN-LAST:event_btnCancelActionPerformed
+
     public JButton getBtnCancel() {
         return btnCancel;
     }
@@ -501,28 +589,12 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         return cboType;
     }
 
-    public JLabel getLbDiscount() {
-        return lbDiscount;
-    }
-
-    public JLabel getLbFinalAmount() {
-        return lbFinalAmount;
-    }
-
     public JLabel getLbIdOrder() {
         return lbIdOrder;
     }
 
-    public JLabel getLbPaidAmount() {
-        return lbPaidAmount;
-    }
-
     public JLabel getLbTitle() {
         return lbTitle;
-    }
-
-    public JLabel getLbTotalAmount() {
-        return lbTotalAmount;
     }
 
     public JPanel getPnlFoodCategory() {
@@ -545,9 +617,6 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         return lbEmployeeName;
     }
 
-    public JLabel getLbStatus() {
-        return lbStatus;
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
@@ -556,20 +625,17 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
     private javax.swing.JButton btnPaid;
     private javax.swing.JComboBox cboTable;
     private javax.swing.JComboBox<String> cboType;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel3;
@@ -578,11 +644,10 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lbCustomerName;
     private javax.swing.JLabel lbDiscount;
     private javax.swing.JLabel lbEmployeeName;
-    private javax.swing.JLabel lbFinalAmount;
     private javax.swing.JLabel lbIdOrder;
-    private javax.swing.JLabel lbPaidAmount;
     private javax.swing.JLabel lbStatus;
     private javax.swing.JLabel lbTitle;
     private javax.swing.JLabel lbTotalAmount;

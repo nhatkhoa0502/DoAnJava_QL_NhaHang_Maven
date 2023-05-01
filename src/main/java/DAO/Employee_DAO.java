@@ -12,9 +12,29 @@ import java.util.logging.Logger;
 
 public class Employee_DAO {
 
-    private Connection conn = ConnectDB.getConnection();
-
+    private Connection conn;
+    
+    public int getId(String username){
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "Select id from employee WHERE `username` = '" + username +"';";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if(rs.next()) {
+                    return rs.getInt(1);
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
+    
     public Vector<Employee_DTO> getAllEmployee() {
+        conn = ConnectDB.getConnection();
         Vector<Employee_DTO> vectorEmployee = new Vector<Employee_DTO>();
         if (conn != null) {
             try {
@@ -43,6 +63,7 @@ public class Employee_DAO {
     }
 
     public String getName(int id) {
+        conn = ConnectDB.getConnection();
         String sql = "SELECT name FROM employee WHERE id = " + id + ";";
         Statement stmt;
         ResultSet rs;
@@ -59,6 +80,7 @@ public class Employee_DAO {
     }
 
     public Employee_DTO getEmployeeByUsrPass(String username, String password) {
+        conn = ConnectDB.getConnection();
         String sql = "SELECT * FROM employee WHERE username ='" + username + "' AND password ='" + password + "';";
         Statement stmt;
         ResultSet rs;
@@ -84,6 +106,7 @@ public class Employee_DAO {
     }
 
     public String getName(String username, String password) {
+        conn = ConnectDB.getConnection();
         String sql = "SELECT name FROM employee WHERE username ='" + username + "' AND password ='" + password + "';";
         Statement stmt;
         ResultSet rs;
@@ -100,6 +123,7 @@ public class Employee_DAO {
     }
     
     public String getName(String username) {
+        conn = ConnectDB.getConnection();
         System.out.println("ursname DAO; " + username);
         String sql = "SELECT name FROM `employee` WHERE `username` = '" + username + "';";
         Statement stmt;
@@ -119,6 +143,7 @@ public class Employee_DAO {
     }
 
     public boolean isManager(String username, String password) {
+        conn = ConnectDB.getConnection();
         String sql = "SELECT permission FROM employee WHERE username ='" + username + "' AND password ='" + password + "';";
         Statement stmt;
         ResultSet rs;

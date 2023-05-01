@@ -15,6 +15,10 @@ public class Order_BUS {
         return orDAO.getAllOrder();
     }    
     
+    public void insertData(Order_DTO order){
+        orDAO.insertData(order);
+    }
+    
     public int getNumOfOrderInTime(Date startTime, Date endTime){
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String startDateFormat = dateFormat.format(startTime);

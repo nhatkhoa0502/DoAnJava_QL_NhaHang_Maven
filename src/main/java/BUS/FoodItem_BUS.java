@@ -13,6 +13,10 @@ public class FoodItem_BUS {
         return foodItemDAO.getAllFoodItem();
     }
     
+    public Vector<FoodItem_DTO> getAllFoodItemByIdCategory(int id){
+        return foodItemDAO.getAllFoodItemByIdCategory(id);
+    }
+    
     public String getName(int id){
         return foodItemDAO.getName(id);
     }

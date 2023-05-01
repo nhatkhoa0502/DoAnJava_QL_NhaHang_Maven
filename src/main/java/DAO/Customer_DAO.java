@@ -1,20 +1,25 @@
-
 package DAO;
 
 import DTO.Customer_DTO;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Customer_DAO {
-    private Connection conn = ConnectDB.getConnection();
-    public Vector<Customer_DTO> getAllCustomer(){
+
+    private Connection conn;
+
+    public Vector<Customer_DTO> getAllCustomer() {
+        conn = ConnectDB.getConnection();
         Vector<Customer_DTO> vectorCustomer = new Vector<Customer_DTO>();
-        if (conn!=null) {
+        if (conn != null) {
             try {
                 String sql = "Select * from customer";
                 Statement stmt = conn.createStatement();
@@ -22,7 +27,7 @@ public class Customer_DAO {
                 while (rs.next()) {
                     Customer_DTO ctm = new Customer_DTO();
                     ctm.setId(rs.getInt("id"));
-                    ctm.setName(rs.getString("name"));                                               
+                    ctm.setName(rs.getString("name"));
                     ctm.setPhoneNumber(rs.getString("phoneNumber"));
                     ctm.setDateCreate(rs.getTimestamp("dateCreate"));
                     vectorCustomer.add(ctm);
@@ -30,13 +35,70 @@ public class Customer_DAO {
             } catch (SQLException ex) {
                 System.out.println(ex);
             } finally {
-                 ConnectDB.closeConnection(conn);
+                ConnectDB.closeConnection(conn);
             }
         }
-        return vectorCustomer;    
+        return vectorCustomer;
     }
-    
-    public String getName(int id){
+
+    public int getId(String phoneNumber) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "Select id from customer where `phoneNumber` = '" + phoneNumber + "';";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    return rs.getInt(1); 
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
+
+    public void insert(String name, String phone) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = " insert into `customer` (name, phoneNumber, dateCreate) values (?, ?, ?)";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setString(1, name);
+                preparedStmt.setString(2, phone);
+                Date now = new Date();
+                Timestamp dateCreate = new Timestamp(now.getTime());
+                preparedStmt.setTimestamp(3, dateCreate);
+                preparedStmt.execute();
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+    }
+
+    public int getMaxId() {
+        conn = ConnectDB.getConnection();
+        String sql = "SELECT MAX(id) FROM customer;";
+        Statement stmt;
+        ResultSet rs;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+
+    public String getName(int id) {
+        conn = ConnectDB.getConnection();
         String sql = "SELECT name FROM customer WHERE id = " + id + ";";
         Statement stmt;
         ResultSet rs;

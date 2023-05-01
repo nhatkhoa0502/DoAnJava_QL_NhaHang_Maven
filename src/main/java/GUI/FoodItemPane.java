@@ -7,6 +7,15 @@ public class FoodItemPane extends javax.swing.JPanel {
     
     FoodItem_DTO foodItem;
 
+    public FoodItem_DTO getFoodItem() {
+        return foodItem;
+    }
+
+    public void setFoodItem(FoodItem_DTO foodItem) {
+        this.foodItem = foodItem;
+    }
+        
+
     public FoodItemPane(FoodItem_DTO foodItem) {
         initComponents();
         this.foodItem = foodItem;

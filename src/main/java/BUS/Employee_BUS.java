@@ -11,8 +11,12 @@ public class Employee_BUS {
 
     public Vector<Employee_DTO> getAllEmployee() {
         return emd.getAllEmployee();
+    }    
+    
+    public int getId(String username){
+        return emd.getId(username);
     }
-
+    
     public Employee_DTO getEmployeeByUsrPass(String username, String password) {
         return emd.getEmployeeByUsrPass(username, password);
     }

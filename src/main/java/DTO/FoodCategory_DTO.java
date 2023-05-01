@@ -2,8 +2,8 @@
 package DTO;
 
 public class FoodCategory_DTO {
-    protected int id;
-    protected String name; 
+    private int id;
+    private String name; 
 
     public FoodCategory_DTO() {
     }
