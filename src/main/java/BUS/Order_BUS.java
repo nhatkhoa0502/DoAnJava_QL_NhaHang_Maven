@@ -11,12 +11,24 @@ import java.util.Vector;
 public class Order_BUS {
     private Order_DAO orDAO = new Order_DAO();
     
+    public boolean idIsExist(int id){
+        return orDAO.idIsExist(id);
+    }
+    
+    public Order_DTO getDataById(int idOrder){
+        return orDAO.getDataById(idOrder);
+    }
+    
     public Vector<Order_DTO> getAllOrder(){        
         return orDAO.getAllOrder();
     }    
     
     public void insertData(Order_DTO order){
         orDAO.insertData(order);
+    }
+    
+    public void updateData(Order_DTO order){
+        orDAO.updateData(order);
     }
     
     public int getNumOfOrderInTime(Date startTime, Date endTime){

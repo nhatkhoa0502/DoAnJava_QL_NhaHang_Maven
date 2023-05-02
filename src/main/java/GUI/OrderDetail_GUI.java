@@ -22,6 +22,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Vector;
 import javax.swing.JOptionPane;
+import BUS.OrderItem_BUS;
+import DTO.OrderItem_DTO;
 
 public class OrderDetail_GUI extends javax.swing.JFrame {
 
@@ -31,17 +33,25 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
     Vector<FoodItem_DTO> vectorFoodItem = new Vector<FoodItem_DTO>();
     Vector<FoodItemPane> vectorFoodItemPane = new Vector<FoodItemPane>();
     Vector<FoodItem_DTO> vectorFoodItemOrder = new Vector<FoodItem_DTO>();
+    Vector<OrderItem_DTO> vectorOrderItem = new Vector<OrderItem_DTO>();
 
     Order_DTO dataOrder = new Order_DTO();
     Order_BUS orderBUS = new Order_BUS();
-    
+    OrderItem_BUS orderItemBUS = new OrderItem_BUS();
+    Employee_BUS employeeBUS = new Employee_BUS();
+    Customer_BUS customerBUS = new Customer_BUS();
+    Table_BUS tableBUS = new Table_BUS();
+    FoodItem_BUS foodItemBUS = new FoodItem_BUS();
+
+    Manager_GUI managerGUI;
     String username;
 
-    public OrderDetail_GUI(String username) {
+    //contructor test
+    public OrderDetail_GUI() {
         this.username = username;
         initComponents();
         setLocationRelativeTo(null);
-        addComboBoxTable();
+        addFreeTableForComboBox();
         addType();
         addFoodCategoryPanel();
         addEmployeeName();
@@ -49,21 +59,81 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         addAllFoodItemPane();
         addEventForFoodCategoryPanel();
     }
-    
-    private void initDataOrder(){
+
+    //contructor add
+    public OrderDetail_GUI(String username, Manager_GUI managerGUI) {
+        this.managerGUI = managerGUI;
+        this.username = username;
+        initComponents();
+        setLocationRelativeTo(null);
+        addFreeTableForComboBox();
+        addType();
+        addFoodCategoryPanel();
+        addEmployeeName();
+        addMaxIdOrder();
+        addAllFoodItemPane();
+        addEventForFoodCategoryPanel();
+    }
+
+    //contructor edit
+    public OrderDetail_GUI(Manager_GUI managerGUI, int idOrder) {
+        this.managerGUI = managerGUI;
+        dataOrder.setId(idOrder);
+        initComponents();
+        setLocationRelativeTo(null);
+
+        dataOrder = orderBUS.getDataById(idOrder);
+        System.out.println("dataOrder: " + dataOrder);
+        loadDataOrderOnGUI();
+        addFoodCategoryPanel();
+        addAllFoodItemPane();
+        addEventForFoodCategoryPanel();
+    }
+
+    private void loadDataOrderOnGUI() {
+        lbIdOrder.setText(dataOrder.getId() + "");
+        lbEmployeeName.setText(employeeBUS.getName(dataOrder.getIdEmployee()));
+        if (dataOrder.getIdCustomer() != 0) {
+            lbCustomerName.setText(customerBUS.getName(dataOrder.getIdCustomer()));
+        }
+        cboTable.addItem(tableBUS.getName(dataOrder.getIdTable()));
+        lbTotalAmount.setText(dataOrder.getTotalAmount() + "");
+        lbDiscount.setText(dataOrder.getDiscount() + "");
+        System.out.println("data order status: " + dataOrder.getStatus());
+        lbStatus.setText(dataOrder.getStatus().trim().equals("paid") ? "Đã thanh toán" : "Bị hủy");
+        cboType.addItem(dataOrder.getType().equals("here") ? "Tại quán" : "Mang về");
+        spnDiscount.setValue(dataOrder.getDiscount());
+        vectorOrderItem = orderItemBUS.getByIdOrder(dataOrder.getId());
+        System.out.println("vetor oder item size: " + vectorOrderItem.size());
+        for (int i = 0; i < vectorOrderItem.size(); i++) {
+            System.out.println("order item: " + vectorOrderItem.get(i).toString());
+            for (int j = 0; j < vectorOrderItem.get(i).getQuantity(); j++) {
+                FoodItem_DTO t = foodItemBUS.getFoodItemById(vectorOrderItem.get(i).getIdFoodItem());
+                pnlOrderItem.add(new OrderItemPanel(t));
+                vectorFoodItemOrder.add(t);
+            }
+        }
+
+    }
+
+    private void initDataOrder() {
         Employee_BUS emBUS = new Employee_BUS();
-        dataOrder.setIdEmployee(emBUS.getId(username)); 
-        int idTable = vectorTable.get(cboTable.getSelectedIndex()).getId();
-        dataOrder.setIdTable(idTable);
+        dataOrder.setIdEmployee(emBUS.getId(username));
+        int idOrder = Integer.parseInt(lbIdOrder.getText());
+        dataOrder.setId(idOrder);
+        if (vectorTable.size() > 0) {
+            int idTable = vectorTable.get(cboTable.getSelectedIndex()).getId();
+            dataOrder.setIdTable(idTable);
+        }
         int total = Integer.parseInt(lbTotalAmount.getText());
-        dataOrder.setTotalAmount(total); 
+        dataOrder.setTotalAmount(total);
         int disCount = Integer.parseInt(lbDiscount.getText());
-        dataOrder.setDiscount(disCount); 
+        dataOrder.setDiscount(disCount);
         String type = cboType.getSelectedIndex() == 0 ? "here" : "takeaway";
         dataOrder.setType(type);
-        Date now = new Date();						
-	Timestamp orderDate = new Timestamp(now.getTime());
-        dataOrder.setOrderDate(orderDate);        
+        Date now = new Date();
+        Timestamp orderDate = new Timestamp(now.getTime());
+        dataOrder.setOrderDate(orderDate);
     }
 
     private double sumMoney() {
@@ -82,7 +152,7 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         pnlFoodItem.removeAll();
         FoodItemPane temp;
         for (int i = 0; i < vectorFoodItem.size(); i++) {
-            System.out.println("test: " + vectorFoodItem.get(i));
+            System.out.println("food item : " + vectorFoodItem.get(i));
             temp = new FoodItemPane(vectorFoodItem.get(i));
             vectorFoodItemPane.add(temp);
             pnlFoodItem.add(temp);
@@ -157,9 +227,8 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         lbEmployeeName.setText(employeeName);
     }
 
-    private void addComboBoxTable() {
-        Table_BUS tableBUS = new Table_BUS();
-        vectorTable = tableBUS.getTableFree();        
+    private void addFreeTableForComboBox() {
+        vectorTable = tableBUS.getTableFree();
         for (int i = 0; i < vectorTable.size(); i++) {
             cboTable.addItem(vectorTable.get(i).getName());
         }
@@ -294,6 +363,7 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(spnDiscount, gridBagConstraints);
 
+        cboTable.setPreferredSize(new java.awt.Dimension(65, 22));
         cboTable.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboTableActionPerformed(evt);
@@ -393,7 +463,7 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         lbTotalAmount.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbTotalAmount.setForeground(new java.awt.Color(255, 0, 0));
         lbTotalAmount.setText("0");
-        jPanel5.add(lbTotalAmount, new org.netbeans.lib.awtextra.AbsoluteConstraints(96, 71, -1, -1));
+        jPanel5.add(lbTotalAmount, new org.netbeans.lib.awtextra.AbsoluteConstraints(96, 71, 80, -1));
 
         lbDiscount.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbDiscount.setForeground(new java.awt.Color(255, 0, 0));
@@ -402,7 +472,7 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel13.setText("VND");
-        jPanel5.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 70, -1, -1));
+        jPanel5.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 70, -1, -1));
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel15.setText("%");
@@ -521,7 +591,7 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
             String mess = "Thành tiền: " + sumMoney + "\nKhách trả: " + cash + "\nTiền thối: " + (cash - sumMoney);
             JOptionPane.showMessageDialog(null, mess, "Thanh Toán", JOptionPane.INFORMATION_MESSAGE);
             dataOrder.setCash(cash);
-            dataOrder.setChange(cash-sumMoney);
+            dataOrder.setChange(cash - sumMoney);
             dataOrder.setType("paid");
             lbStatus.setText("Đã thanh toán");
             lbStatus.setForeground(Color.GREEN);
@@ -536,7 +606,7 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
             Customer_BUS t = new Customer_BUS();
             if (t.getId(phoneNumberCustomer) == 0) {
                 String nameCustomer = JOptionPane.showInputDialog("Nhập tên khách hàng: ");
-                lbCustomerName.setText(nameCustomer); 
+                lbCustomerName.setText(nameCustomer);
                 t.insert(nameCustomer, phoneNumberCustomer);
                 dataOrder.setIdCustomer(t.getMaxId());
                 System.out.println("data order id customer: " + dataOrder.getIdCustomer());
@@ -549,24 +619,49 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnInforCustomerActionPerformed
 
+
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
-        initDataOrder();    
-        dataOrder.setStatus("paid"); 
-        System.out.println("data order: " + dataOrder.toString());
-        orderBUS.insertData(dataOrder);
-        setVisible(false); 
+        System.out.println("data order cash: " + dataOrder.getCash());
+        if (dataOrder.getCash() != 0) {
+            initDataOrder();
+            dataOrder.setStatus("paid");
+            System.out.println("data order: " + dataOrder.toString());
+            if (!orderBUS.idIsExist(dataOrder.getId())) {                
+                orderBUS.insertData(dataOrder);
+                orderItemBUS.inserData(dataOrder.getId(), vectorFoodItemOrder);
+            } else {
+                System.out.println("update: ");
+                orderBUS.updateData(dataOrder);
+                orderItemBUS.inserData(dataOrder.getId(), vectorFoodItemOrder);
+            }
+            setVisible(false);
+            JOptionPane.showMessageDialog(null, "Lưu thành công!", "Output", JOptionPane.INFORMATION_MESSAGE);
+            managerGUI.renderOrder();
+        } else {
+            JOptionPane.showMessageDialog(null, "Thanh toán trước khi lưu!", "Output", JOptionPane.INFORMATION_MESSAGE);
+        }
     }//GEN-LAST:event_btnOKActionPerformed
 
+    //test
     private void cboTableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboTableActionPerformed
-        System.out.println("combox box selected: "+cboTable.getSelectedIndex());
-        System.out.println("vector combox box selected: "+ vectorTable.get(cboTable.getSelectedIndex()).getName());
+//        System.out.println("combox box selected: " + cboTable.getSelectedIndex());
+//        System.out.println("vector combox box selected: " + vectorTable.get(cboTable.getSelectedIndex()).getName());
+//        for (int i = 0; i < vectorFoodItemOrder.size(); i++) {
+//            System.out.println("food item order: " + vectorFoodItemOrder.get(i));
+//        }
+//        orderItemBUS.inserData(dataOrder.getId(), vectorFoodItemOrder);
     }//GEN-LAST:event_cboTableActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         initDataOrder();
         dataOrder.setStatus("cancel");
-        orderBUS.insertData(dataOrder);   
+
+        orderBUS.insertData(dataOrder);
+        orderItemBUS.inserData(dataOrder.getId(), vectorFoodItemOrder);
+
         setVisible(false);
+        JOptionPane.showMessageDialog(null, "Hủy thành công!", "Output", JOptionPane.INFORMATION_MESSAGE);
+        managerGUI.renderOrder();
     }//GEN-LAST:event_btnCancelActionPerformed
 
     public JButton getBtnCancel() {

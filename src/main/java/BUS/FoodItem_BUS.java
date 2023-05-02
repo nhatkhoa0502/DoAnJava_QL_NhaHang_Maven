@@ -9,6 +9,10 @@ import java.util.Vector;
 public class FoodItem_BUS {
     FoodItem_DAO foodItemDAO = new FoodItem_DAO();
     
+    public FoodItem_DTO getFoodItemById(int id){
+        return foodItemDAO.getFoodItemById(id);
+    }
+    
     public Vector<FoodItem_DTO> getAllFoodItem(){        
         return foodItemDAO.getAllFoodItem();
     }

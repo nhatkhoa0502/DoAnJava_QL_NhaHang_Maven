@@ -34,7 +34,7 @@ public class Manager_GUI extends JPanel {
     Vector<MenuItem> vectorMenuItem;
     String username;
 
-    public Manager_GUI(Vector<MenuItem> vectorMenuItem,String username) {
+    public Manager_GUI(Vector<MenuItem> vectorMenuItem, String username) {
         this.username = username;
         System.out.println("managerGUI username: " + username);
         this.vectorMenuItem = vectorMenuItem;
@@ -42,6 +42,7 @@ public class Manager_GUI extends JPanel {
         settingTable();
         setIconForButton();
     }
+
     public Manager_GUI() {
         this.vectorMenuItem = vectorMenuItem;
         initComponents();
@@ -380,6 +381,11 @@ public class Manager_GUI extends JPanel {
 
         btnEdit.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnEdit.setText("Sửa");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -430,10 +436,26 @@ public class Manager_GUI extends JPanel {
 
         switch (menuItemActive) {
             case "qlddh":
-                new OrderDetail_GUI(username).setVisible(true);
+                new OrderDetail_GUI(username, this).setVisible(true);
                 break;
         }
+
     }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        String menuItemActive = getMenuItemActive().getId();
+        switch (menuItemActive) {
+            case "qlddh":
+                if (tblData.getSelectedRow() < 0) {
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng muốn sửa!", "Output", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    int idOrder = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
+                    System.out.println("idOrder: " + idOrder);
+                    new OrderDetail_GUI(this, idOrder).setVisible(true);
+                }
+                break;
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;

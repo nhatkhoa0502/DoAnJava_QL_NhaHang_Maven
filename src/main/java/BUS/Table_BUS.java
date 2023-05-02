@@ -10,6 +10,10 @@ import java.util.Vector;
 public class Table_BUS {
     private Table_DAO tbd = new Table_DAO();
     
+    public Table_DTO getTableById(int id){
+        return tbd.getTableById(id);
+    }
+    
     public Vector<Table_DTO> getAllTable(){        
         return tbd.getAllTable();
     }       

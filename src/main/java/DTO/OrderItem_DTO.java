@@ -2,14 +2,20 @@
 package DTO;
 
 public class OrderItem_DTO {
-    private int idOrder, idFoodItem,quantity;
-    private String note;
+    private int idOrder, idFoodItem,quantity;    
 
-    public OrderItem_DTO(int idOrder, int idFoodItem, int quantity, String note) {
+    public OrderItem_DTO() {
+    }
+
+    @Override
+    public String toString() {
+        return "OrderItem_DTO{" + "idOrder=" + idOrder + ", idFoodItem=" + idFoodItem + ", quantity=" + quantity + '}';
+    }        
+    
+    public OrderItem_DTO(int idOrder, int idFoodItem, int quantity) {
         this.idOrder = idOrder;
         this.idFoodItem = idFoodItem;
-        this.quantity = quantity;
-        this.note = note;
+        this.quantity = quantity;        
     }
         
     public int getIdOrder() {
@@ -24,9 +30,6 @@ public class OrderItem_DTO {
         return quantity;
     }
 
-    public String getNote() {
-        return note;
-    }
 
     public void setIdOrder(int idOrder) {
         this.idOrder = idOrder;
@@ -40,9 +43,5 @@ public class OrderItem_DTO {
         this.quantity = quantity;
     }
 
-    public void setNote(String note) {
-        this.note = note;
-    }
-    
-    
+   
 }

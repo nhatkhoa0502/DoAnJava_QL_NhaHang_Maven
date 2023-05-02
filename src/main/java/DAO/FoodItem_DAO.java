@@ -11,6 +11,34 @@ public class FoodItem_DAO {
 
     private Connection conn;
 
+    public FoodItem_DTO getFoodItemById(int id) {
+        conn = ConnectDB.getConnection();
+        FoodItem_DTO foodItem = null;
+        if (conn != null) {
+            try {
+                String sql = "Select * from food_item where id = " + id + ";";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    foodItem = new FoodItem_DTO();
+                    foodItem.setId(rs.getInt("id"));
+                    foodItem.setName(rs.getString("name"));
+                    foodItem.setDescription(rs.getString("description"));
+                    foodItem.setUrlImage(rs.getString("urlImage"));
+                    foodItem.setUnitName(rs.getString("unitName"));
+                    foodItem.setUnitPrice(rs.getInt("unitPrice"));
+                    foodItem.setIdCategory(rs.getInt("idCategory"));
+                    return foodItem;
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return foodItem;
+    }
+
     public Vector<FoodItem_DTO> getAllFoodItemByIdCategory(int id) {
         conn = ConnectDB.getConnection();
         Vector<FoodItem_DTO> vectorFoodCategory = new Vector<FoodItem_DTO>();
