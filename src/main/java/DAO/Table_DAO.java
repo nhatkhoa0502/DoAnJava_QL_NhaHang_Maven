@@ -2,6 +2,7 @@ package DAO;
 
 import DTO.Table_DTO;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,6 +13,103 @@ import java.util.logging.Logger;
 public class Table_DAO {
 
     private Connection conn;
+    
+    public boolean delete(int id){
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {                 
+                String sql = "DELETE FROM `table` WHERE `id` = '" + id +"';";
+                Statement stmt = conn.createStatement();
+                int i = stmt.executeUpdate(sql);
+                System.out.println(i+ " hang duoc cap nhap ");
+                return true;
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return false;
+    }
+
+    public boolean update(Table_DTO tableDTO) {
+        System.out.println("id table: " + tableDTO.getId());
+        System.out.println("name table: " +tableDTO.getName());
+        System.out.println("status table: " +tableDTO.getStatus());
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "UPDATE `table` SET `name` = ?, `status` = ? WHERE `id` = ?;";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setString(1, tableDTO.getName());
+                preparedStmt.setString(2, tableDTO.getStatus());
+                preparedStmt.setInt(3, tableDTO.getId());
+                int i = preparedStmt.executeUpdate();
+                System.out.println(i + " dong trong bang 'table' dc sua ");
+                return true;
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return false;
+    }
+
+    public boolean insert(String name, String status) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "INSERT INTO `table` (name, status) VALUES (?,?);";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setString(1, name);
+                preparedStmt.setString(2, status);
+                int i = preparedStmt.executeUpdate();
+                System.out.println(i + " dong dc them");
+                return true;
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return false;
+    }
+
+    public void changeTableToServing(int id) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "UPDATE `table` SET `status` = 'serving' WHERE `id` = ?;";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setInt(1, id);
+                preparedStmt.execute();
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+    }
+
+    public int getId(String nameTable) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "Select `id` from `table` where `name` = '" + nameTable + "';";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    return rs.getInt(0);
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
 
     public Table_DTO getTableById(int id) {
         conn = ConnectDB.getConnection();

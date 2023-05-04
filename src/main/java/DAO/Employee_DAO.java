@@ -3,6 +3,7 @@ package DAO;
 import DTO.Employee_DTO;
 import DTO.Session_DTO;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,6 +14,72 @@ import java.util.logging.Logger;
 public class Employee_DAO {
 
     private Connection conn;
+    
+    public boolean deleteEmployeeById(int id){
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {                 
+                String sql = "DELETE FROM `employee` WHERE `id` = '" + id +"';";
+                Statement stmt = conn.createStatement();
+                int i = stmt.executeUpdate(sql);
+                System.out.println(i+ " hang duoc cap nhap ");
+                return true;
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return false; 
+    }
+    
+    public boolean updateEmployee(Employee_DTO employeeDTO){
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "UPDATE `employee` SET `username` = ?, `password` = ?, `name` = ?, `phoneNumber` = ?, `permission` = ?, `salary` = ? WHERE `id` = ?;";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setString(1, employeeDTO.getUsername());
+                preparedStmt.setString(2, employeeDTO.getPassword());              
+                preparedStmt.setString(3, employeeDTO.getName());        
+                preparedStmt.setString(4, employeeDTO.getPhoneNumber());                   
+                preparedStmt.setString(5, employeeDTO.getPermission());
+                preparedStmt.setInt(6, employeeDTO.getSalary());
+                preparedStmt.setInt(7, employeeDTO.getId());
+                preparedStmt.execute();
+                return true;
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return false;
+    }
+    
+    public boolean addEmployee(Employee_DTO employeeDTO){
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "INSERT INTO `employee` (username, password, name, phoneNumber, startDate, permission,salary) VALUES (?,?,?,?,?,?,?);";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setString(1, employeeDTO.getUsername());
+                preparedStmt.setString(2, employeeDTO.getPassword());              
+                preparedStmt.setString(3, employeeDTO.getName());        
+                preparedStmt.setString(4, employeeDTO.getPhoneNumber());   
+                preparedStmt.setTimestamp(5, employeeDTO.getStartDate());
+                preparedStmt.setString(6, employeeDTO.getPermission());
+                preparedStmt.setInt(7, employeeDTO.getSalary());
+                preparedStmt.execute();
+                return true;
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return false;
+    }
     
     public int getId(String username){
         conn = ConnectDB.getConnection();

@@ -8,7 +8,25 @@ import java.util.Vector;
 public class Employee_BUS {
 
     private Employee_DAO emd = new Employee_DAO();
-
+    
+    public boolean deleteEmployeeById(int id){
+        return emd.deleteEmployeeById(id);
+    }
+    
+    public boolean updateEmployee(Employee_DTO employeeDTO){
+        if(emd.updateEmployee(employeeDTO)){
+            return true;
+        }
+        return false;    
+    }
+    
+    public boolean addEmployee(Employee_DTO employeeDTO){
+        if(emd.addEmployee(employeeDTO)){
+            return true;
+        }
+        return false;    
+    }
+    
     public Vector<Employee_DTO> getAllEmployee() {
         return emd.getAllEmployee();
     }    

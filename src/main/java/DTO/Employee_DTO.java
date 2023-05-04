@@ -14,7 +14,17 @@ public class Employee_DTO {
 
     public Employee_DTO() {
     }
-
+    
+    public Employee_DTO(int id, String username, String password, String name, String phoneNumber, String permission, int salary) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.permission = permission;        
+        this.salary = salary;
+    }
+    
     public Employee_DTO(int id, String username, String password, String name, String phoneNumber, String permission, Timestamp startDate, int salary) {
         this.id = id;
         this.username = username;

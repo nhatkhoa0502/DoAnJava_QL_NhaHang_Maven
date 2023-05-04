@@ -82,6 +82,8 @@ public class Manager_GUI extends JPanel {
     }
 
     public void renderEmployeeData() {
+        btnDelete.setText("Xóa");
+        btnEdit.setVisible(true);
         // xoa du lieu trong model
         model.setRowCount(0);
         model.setColumnCount(0);
@@ -105,7 +107,7 @@ public class Manager_GUI extends JPanel {
             password = vectorEmployee.get(i).getPassword();
             name = vectorEmployee.get(i).getName();
             phoneNumber = vectorEmployee.get(i).getPhoneNumber();
-            permission = vectorEmployee.get(i).getPermission().equals("manager") ? "Quản Lý" : "Nhân Viên";
+            permission = vectorEmployee.get(i).getPermission().equals("manager") ? "Quản lý" : "Nhân viên";
             startDate = vectorEmployee.get(i).getStartDate().toString().split(" ")[0];
             salary = vectorEmployee.get(i).getSalary();
             model.addRow(new Object[]{id, name, username, password, phoneNumber, permission, startDate, salary});
@@ -113,6 +115,8 @@ public class Manager_GUI extends JPanel {
     }
 
     public void renderFoodCategory() {
+        btnDelete.setText("Xóa");
+        btnEdit.setVisible(true);
         // xoa du lieu trong model
         model.setRowCount(0);
         model.setColumnCount(0);
@@ -132,6 +136,8 @@ public class Manager_GUI extends JPanel {
     }
 
     public void renderFoodItem() {
+        btnDelete.setText("Xóa");
+        btnEdit.setVisible(true);
         // xoa du lieu trong model
         model.setRowCount(0);
         model.setColumnCount(0);
@@ -161,6 +167,8 @@ public class Manager_GUI extends JPanel {
     }
 
     public void renderTable() {
+        btnDelete.setText("Xóa");
+        btnEdit.setVisible(true);
         // xoa du lieu trong model
         model.setRowCount(0);
         model.setColumnCount(0);
@@ -182,6 +190,8 @@ public class Manager_GUI extends JPanel {
     }
 
     public void renderCustomer() {
+        btnDelete.setText("Xóa");
+        btnEdit.setVisible(true);
         // xoa du lieu trong model
         model.setRowCount(0);
         model.setColumnCount(0);
@@ -208,6 +218,8 @@ public class Manager_GUI extends JPanel {
     }
 
     public void renderOrder() {
+        btnDelete.setText("Hủy");
+        btnEdit.setVisible(false);
         // xoa du lieu trong model
         model.setRowCount(0);
         model.setColumnCount(0);
@@ -257,13 +269,6 @@ public class Manager_GUI extends JPanel {
         }
     }
 
-    public void renderStatistical() {
-        // xoa du lieu trong model
-        model.setRowCount(0);
-        model.setColumnCount(0);
-
-    }
-
     public JComboBox<String> getCboSearchField() {
         return cboSearchField;
     }
@@ -301,28 +306,22 @@ public class Manager_GUI extends JPanel {
         return tblData;
     }
 
-    // Lấy id các hàng đc chọn
-    public int[] getSelectedIds() {
-
-        int selectedRows[] = tblData.getSelectedRows();
-        int selectedIds[] = new int[selectedRows.length];
-        for (int i = 0; i < selectedRows.length; i++) {
-            int selectedRow = selectedRows[i];
-            int id = (int) tblData.getValueAt(selectedRow, 0);
-            selectedIds[i] = id;
-        }
-        return selectedIds;
+    public Employee_DTO getEmployeeRowSelected() {
+        int id = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
+        String name = (String) tblData.getValueAt(tblData.getSelectedRow(), 1);
+        String username = (String) tblData.getValueAt(tblData.getSelectedRow(), 2);
+        String password = (String) tblData.getValueAt(tblData.getSelectedRow(), 3);
+        String phoneNumber = (String) tblData.getValueAt(tblData.getSelectedRow(), 4);
+        String permission = (String) tblData.getValueAt(tblData.getSelectedRow(), 5);
+        int salary = (int) tblData.getValueAt(tblData.getSelectedRow(), 7);
+        return new Employee_DTO(id, username, password, name, phoneNumber, permission, salary);
     }
 
-    // Lấy id hàng chọn đầu
-    public int getSelectedId() {
-
-        int selectedRow = tblData.getSelectedRow();
-        if (selectedRow < 0) {
-            return -1;
-        }
-        int id = (int) tblData.getValueAt(selectedRow, 0);
-        return id;
+    public Table_DTO getTableRowSelected() {
+        int id = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
+        String name = (String) tblData.getValueAt(tblData.getSelectedRow(), 1);
+        String status = (String) tblData.getValueAt(tblData.getSelectedRow(), 2);
+        return new Table_DTO(id, name, status.equals("Trống") ? "free" : "serving");
     }
 
     @SuppressWarnings("unchecked")
@@ -371,6 +370,11 @@ public class Manager_GUI extends JPanel {
 
         btnDelete.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnDelete.setText("Xóa");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -433,10 +437,25 @@ public class Manager_GUI extends JPanel {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         String menuItemActive = getMenuItemActive().getId();
-
         switch (menuItemActive) {
+            case "qlb":
+                new AddTableForm(this).setVisible(true);
+                break;
             case "qlddh":
                 new OrderDetail_GUI(username, this).setVisible(true);
+                break;
+            case "qlnv":
+                new AddEmployeeForm(this).setVisible(true);
+                break;
+            case "qllm":
+                String name = JOptionPane.showInputDialog("Nhập vào tên loại món: ");
+                if (name != null && !name.trim().equals("")) {
+                    FoodCategory_BUS t = new FoodCategory_BUS();
+                    if (t.insert(name)) {
+                        JOptionPane.showMessageDialog(null, "Thêm thành công", "Output", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    renderFoodCategory();
+                }
                 break;
         }
 
@@ -444,18 +463,106 @@ public class Manager_GUI extends JPanel {
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         String menuItemActive = getMenuItemActive().getId();
+        if (tblData.getSelectedRow() < 0) {
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng muốn sửa!", "Output", JOptionPane.INFORMATION_MESSAGE);
+        }
         switch (menuItemActive) {
+            case "qlb":
+                if (tblData.getSelectedRow() >= 0) {
+                    new AddTableForm(this, getTableRowSelected()).setVisible(true);
+                }
+                break;
+            case "qllm":
+                if (tblData.getSelectedRow() >= 0) {
+                    int id = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
+                    String oldName = (String) tblData.getValueAt(tblData.getSelectedRow(), 1);
+                    String newName = JOptionPane.showInputDialog("Sửa tên loại món: ", oldName + "");
+                    if (newName != null && !newName.trim().equals("")) {
+                        FoodCategory_BUS t = new FoodCategory_BUS();
+                        if (t.update(newName, id)) {
+                            JOptionPane.showMessageDialog(null, "Sửa thành công", "Output", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                        renderFoodCategory();
+                    }
+                }
+                break;
+            case "qlnv":
+                if (tblData.getSelectedRow() >= 0) {
+                    new AddEmployeeForm(this, getEmployeeRowSelected()).setVisible(true);
+                }
+                break;
+//            case "qlddh":
+//                JOptionPane.showMessageDialog(null, "Không thể sửa hóa đơn!", "Output", JOptionPane.INFORMATION_MESSAGE);
+//                if (tblData.getSelectedRow() < 0) {
+//                    JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng muốn sửa!", "Output", JOptionPane.INFORMATION_MESSAGE);
+//                } else {
+//                    int idOrder = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
+//                    System.out.println("idOrder: " + idOrder);
+//                    new OrderDetail_GUI(this, idOrder).setVisible(true);
+//                }
+//                break;
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        String menuItemActive = getMenuItemActive().getId();
+        switch (menuItemActive) {
+            case "qlb":
+                if (tblData.getSelectedRow() < 0) {
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng muốn xóa!", "Output", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    int confirm = JOptionPane.showConfirmDialog(null, "Xác nhận xóa", "Confirm", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        int idSelected = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
+                        Table_BUS t = new Table_BUS();
+                        t.delete(idSelected);       
+                        renderTable();                                             
+                    }
+                }
+                break;
+            case "qllm":
+                if (tblData.getSelectedRow() < 0) {
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng muốn xóa!", "Output", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    int confirm = JOptionPane.showConfirmDialog(null, "Xác nhận xóa", "Confirm", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        int idSelected = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
+                        FoodCategory_BUS t = new FoodCategory_BUS();
+                        t.delete(idSelected);
+                        renderFoodCategory();
+                    }
+                }
+                break;
+            case "qlnv":
+                if (tblData.getSelectedRow() < 0) {
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng muốn xóa!", "Output", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    int confirm = JOptionPane.showConfirmDialog(null, "Xác nhận xóa", "Confirm", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        int idSelected = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
+                        Employee_BUS t = new Employee_BUS();
+                        t.deleteEmployeeById(idSelected);
+                        renderEmployeeData();
+                    }
+                }
+                break;
+
             case "qlddh":
                 if (tblData.getSelectedRow() < 0) {
-                    JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng muốn sửa!", "Output", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng muốn hủy!", "Output", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    int idOrder = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
-                    System.out.println("idOrder: " + idOrder);
-                    new OrderDetail_GUI(this, idOrder).setVisible(true);
+                    int confirm = JOptionPane.showConfirmDialog(null, "Xác nhận hủy hóa đơn", "Confirm", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        System.out.println("ok huy");
+                        int idSelected = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
+                        Order_BUS t = new Order_BUS();
+                        t.cancelOrderById(idSelected);
+                        renderOrder();
+                    }
                 }
                 break;
         }
-    }//GEN-LAST:event_btnEditActionPerformed
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;

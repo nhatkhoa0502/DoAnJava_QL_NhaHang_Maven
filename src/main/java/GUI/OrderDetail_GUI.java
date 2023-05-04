@@ -75,46 +75,45 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         addEventForFoodCategoryPanel();
     }
 
-    //contructor edit
-    public OrderDetail_GUI(Manager_GUI managerGUI, int idOrder) {
-        this.managerGUI = managerGUI;
-        dataOrder.setId(idOrder);
-        initComponents();
-        setLocationRelativeTo(null);
+//    //contructor edit
+//    public OrderDetail_GUI(Manager_GUI managerGUI, int idOrder) {
+//        this.managerGUI = managerGUI;
+//        dataOrder.setId(idOrder);
+//        initComponents();
+//        setLocationRelativeTo(null);
+//
+//        dataOrder = orderBUS.getDataById(idOrder);
+//        System.out.println("dataOrder: " + dataOrder);
+//        loadDataOrderOnGUI();
+//        addFoodCategoryPanel();
+//        addAllFoodItemPane();
+//        addEventForFoodCategoryPanel();
+//    }
 
-        dataOrder = orderBUS.getDataById(idOrder);
-        System.out.println("dataOrder: " + dataOrder);
-        loadDataOrderOnGUI();
-        addFoodCategoryPanel();
-        addAllFoodItemPane();
-        addEventForFoodCategoryPanel();
-    }
-
-    private void loadDataOrderOnGUI() {
-        lbIdOrder.setText(dataOrder.getId() + "");
-        lbEmployeeName.setText(employeeBUS.getName(dataOrder.getIdEmployee()));
-        if (dataOrder.getIdCustomer() != 0) {
-            lbCustomerName.setText(customerBUS.getName(dataOrder.getIdCustomer()));
-        }
-        cboTable.addItem(tableBUS.getName(dataOrder.getIdTable()));
-        lbTotalAmount.setText(dataOrder.getTotalAmount() + "");
-        lbDiscount.setText(dataOrder.getDiscount() + "");
-        System.out.println("data order status: " + dataOrder.getStatus());
-        lbStatus.setText(dataOrder.getStatus().trim().equals("paid") ? "Đã thanh toán" : "Bị hủy");
-        cboType.addItem(dataOrder.getType().equals("here") ? "Tại quán" : "Mang về");
-        spnDiscount.setValue(dataOrder.getDiscount());
-        vectorOrderItem = orderItemBUS.getByIdOrder(dataOrder.getId());
-        System.out.println("vetor oder item size: " + vectorOrderItem.size());
-        for (int i = 0; i < vectorOrderItem.size(); i++) {
-            System.out.println("order item: " + vectorOrderItem.get(i).toString());
-            for (int j = 0; j < vectorOrderItem.get(i).getQuantity(); j++) {
-                FoodItem_DTO t = foodItemBUS.getFoodItemById(vectorOrderItem.get(i).getIdFoodItem());
-                pnlOrderItem.add(new OrderItemPanel(t));
-                vectorFoodItemOrder.add(t);
-            }
-        }
-
-    }
+//    private void loadDataOrderOnGUI() {
+//        lbIdOrder.setText(dataOrder.getId() + "");
+//        lbEmployeeName.setText(employeeBUS.getName(dataOrder.getIdEmployee()));
+//        if (dataOrder.getIdCustomer() != 0) {
+//            lbCustomerName.setText(customerBUS.getName(dataOrder.getIdCustomer()));
+//        }
+//        cboTable.addItem(tableBUS.getName(dataOrder.getIdTable()));
+//        lbTotalAmount.setText(dataOrder.getTotalAmount() + "");
+//        lbDiscount.setText(dataOrder.getDiscount() + "");
+//        System.out.println("data order status: " + dataOrder.getStatus());
+//        lbStatus.setText(dataOrder.getStatus().trim().equals("paid") ? "Đã thanh toán" : "Bị hủy");
+//        cboType.addItem(dataOrder.getType().equals("here") ? "Tại quán" : "Mang về");
+//        spnDiscount.setValue(dataOrder.getDiscount());
+//        vectorOrderItem = orderItemBUS.getByIdOrder(dataOrder.getId());
+//        System.out.println("vetor oder item size: " + vectorOrderItem.size());
+//        for (int i = 0; i < vectorOrderItem.size(); i++) {
+//            System.out.println("order item: " + vectorOrderItem.get(i).toString());
+//            for (int j = 0; j < vectorOrderItem.get(i).getQuantity(); j++) {
+//                FoodItem_DTO t = foodItemBUS.getFoodItemById(vectorOrderItem.get(i).getIdFoodItem());
+//                pnlOrderItem.add(new OrderItemPanel(t));
+//                vectorFoodItemOrder.add(t);
+//            }
+//        }
+//    }
 
     private void initDataOrder() {
         Employee_BUS emBUS = new Employee_BUS();
@@ -286,6 +285,10 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         lbCustomerName = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         lbStatus = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        lbCash = new javax.swing.JLabel();
+        lbChange = new javax.swing.JLabel();
         pnlRight = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -478,12 +481,12 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         jLabel15.setText("%");
         jPanel5.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 101, -1, -1));
 
-        jLabel18.setText("Tên khách hàng: ");
-        jPanel5.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, -1, -1));
+        jLabel18.setText("Tiền thối:");
+        jPanel5.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, -1, -1));
 
         lbCustomerName.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbCustomerName.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel5.add(lbCustomerName, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 130, 110, 20));
+        jPanel5.add(lbCustomerName, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, 110, 20));
 
         jLabel19.setText("Trạng thái:");
         jPanel5.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 43, -1, -1));
@@ -493,7 +496,21 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         lbStatus.setText("Chưa thanh toán");
         jPanel5.add(lbStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(96, 41, -1, -1));
 
-        jPanel4.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 240, 170));
+        jLabel20.setText("Tên khách hàng: ");
+        jPanel5.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, -1, -1));
+
+        jLabel21.setText("Tiền khách đưa:");
+        jPanel5.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, -1, -1));
+
+        lbCash.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lbCash.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel5.add(lbCash, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 170, 110, 20));
+
+        lbChange.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lbChange.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel5.add(lbChange, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 200, 110, 20));
+
+        jPanel4.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 250, 280));
 
         pnlLeft.add(jPanel4, java.awt.BorderLayout.CENTER);
 
@@ -597,6 +614,8 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
             lbStatus.setForeground(Color.GREEN);
             lbTotalAmount.setText(sumMoney + "");
             lbDiscount.setText(dataOrder.getDiscount() + "");
+            lbCash.setText(cash+"");
+            lbChange.setText((cash - sumMoney)+"");
         }
     }//GEN-LAST:event_btnPaidActionPerformed
 
@@ -625,15 +644,11 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         if (dataOrder.getCash() != 0) {
             initDataOrder();
             dataOrder.setStatus("paid");
-            System.out.println("data order: " + dataOrder.toString());
-            if (!orderBUS.idIsExist(dataOrder.getId())) {                
-                orderBUS.insertData(dataOrder);
-                orderItemBUS.inserData(dataOrder.getId(), vectorFoodItemOrder);
-            } else {
-                System.out.println("update: ");
-                orderBUS.updateData(dataOrder);
-                orderItemBUS.inserData(dataOrder.getId(), vectorFoodItemOrder);
-            }
+            System.out.println("data order: " + dataOrder.toString());                        
+            orderBUS.insertData(dataOrder);
+            orderItemBUS.inserData(dataOrder.getId(), vectorFoodItemOrder);                         
+            Table_BUS t = new Table_BUS();
+            t.changeTableToServing(dataOrder.getIdTable()); 
             setVisible(false);
             JOptionPane.showMessageDialog(null, "Lưu thành công!", "Output", JOptionPane.INFORMATION_MESSAGE);
             managerGUI.renderOrder();
@@ -655,10 +670,8 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         initDataOrder();
         dataOrder.setStatus("cancel");
-
         orderBUS.insertData(dataOrder);
         orderItemBUS.inserData(dataOrder.getId(), vectorFoodItemOrder);
-
         setVisible(false);
         JOptionPane.showMessageDialog(null, "Hủy thành công!", "Output", JOptionPane.INFORMATION_MESSAGE);
         managerGUI.renderOrder();
@@ -726,6 +739,8 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -739,6 +754,8 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lbCash;
+    private javax.swing.JLabel lbChange;
     private javax.swing.JLabel lbCustomerName;
     private javax.swing.JLabel lbDiscount;
     private javax.swing.JLabel lbEmployeeName;

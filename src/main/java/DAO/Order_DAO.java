@@ -13,6 +13,22 @@ public class Order_DAO {
 
     private Connection conn;
 
+    public void cancelOrderById(int id){
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "UPDATE `order` SET `status` = 'cancel' WHERE `id` = ?;";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setInt(1, id);
+                preparedStmt.execute();
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+    }
+    
     public void updateData(Order_DTO order){
         conn = ConnectDB.getConnection();
         if (conn != null) {
