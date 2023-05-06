@@ -9,6 +9,15 @@ public class FoodItem_DTO {
     public FoodItem_DTO() {
     }
 
+    public FoodItem_DTO(String name, String description, String unitName, int unitPrice) {
+        this.name = name;
+        this.description = description;
+        this.unitName = unitName;
+        this.unitPrice = unitPrice;
+    }
+
+    
+    
     public FoodItem_DTO(int id, String name, String description, String urlImage, String unitName, int unitPrice, int idCategory) {
         this.id = id;
         this.name = name;

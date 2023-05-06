@@ -13,15 +13,15 @@ import java.util.logging.Logger;
 public class Table_DAO {
 
     private Connection conn;
-    
-    public boolean delete(int id){
+
+    public boolean delete(int id) {
         conn = ConnectDB.getConnection();
         if (conn != null) {
-            try {                 
-                String sql = "DELETE FROM `table` WHERE `id` = '" + id +"';";
+            try {
+                String sql = "DELETE FROM `table` WHERE `id` = '" + id + "';";
                 Statement stmt = conn.createStatement();
                 int i = stmt.executeUpdate(sql);
-                System.out.println(i+ " hang duoc cap nhap ");
+                System.out.println(i + " hang duoc cap nhap ");
                 return true;
             } catch (SQLException ex) {
                 System.out.println(ex);
@@ -34,8 +34,8 @@ public class Table_DAO {
 
     public boolean update(Table_DTO tableDTO) {
         System.out.println("id table: " + tableDTO.getId());
-        System.out.println("name table: " +tableDTO.getName());
-        System.out.println("status table: " +tableDTO.getStatus());
+        System.out.println("name table: " + tableDTO.getName());
+        System.out.println("status table: " + tableDTO.getStatus());
         conn = ConnectDB.getConnection();
         if (conn != null) {
             try {
@@ -196,6 +196,8 @@ public class Table_DAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectDB.closeConnection(conn);
         }
         return "";
     }

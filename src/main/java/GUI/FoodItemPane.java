@@ -1,7 +1,9 @@
 
 package GUI;
 
+import BUS.ImageManager;
 import DTO.FoodItem_DTO;
+import javax.swing.ImageIcon;
 
 public class FoodItemPane extends javax.swing.JPanel {
     
@@ -23,12 +25,13 @@ public class FoodItemPane extends javax.swing.JPanel {
             if (foodItem != null) {
                 lbName.setText(foodItem.getName());
                 lbPrice.setText(foodItem.getUnitPrice()+ "VND / " + foodItem.getUnitName());
-                
-//                String urlImage = foodItem.getUrlImage();                
-//                if (urlImage != null && !urlImage.isEmpty()) {
-//                    ImageIcon ic = im.getImage(urlImage);
-//                    lbIcon.setIcon(im.resizeIcon(ic, 75, 75));
-//                }
+                                
+                String urlImage = foodItem.getUrlImage();                
+                ImageManager im = new ImageManager();
+                if (urlImage != null && !urlImage.isEmpty()) {
+                    ImageIcon ic = im.getImage(urlImage);
+                    lbIcon.setIcon(im.resizeIcon(ic, 75, 75));
+                }
             }
         } catch (Exception e) {
             System.out.println("loi: "+e);

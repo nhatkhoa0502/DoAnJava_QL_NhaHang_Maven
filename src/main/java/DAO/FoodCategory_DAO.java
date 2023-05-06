@@ -11,14 +11,54 @@ public class FoodCategory_DAO {
 
     private Connection conn;
 
-    public boolean delete(int id){
+
+    
+    public String getName(int id){
         conn = ConnectDB.getConnection();
         if (conn != null) {
-            try {                 
-                String sql = "DELETE FROM `food_category` WHERE `id` = '" + id +"';";
+            try {
+                String sql = "Select `name` from `food_category` where `id` = '" + id + "';";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if(rs.next()) {                    
+                    return rs.getString(1);                    
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return "";
+    }
+    
+    public int getId(String name) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "Select `id` from `food_category` where `name` = '" + name + "';";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if(rs.next()) {                    
+                    return rs.getInt(1);                    
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
+
+    public boolean delete(int id) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "DELETE FROM `food_category` WHERE `id` = '" + id + "';";
                 Statement stmt = conn.createStatement();
                 int i = stmt.executeUpdate(sql);
-                System.out.println(i+ " hang duoc cap nhap ");
+                System.out.println(i + " hang duoc cap nhap ");
                 return true;
             } catch (SQLException ex) {
                 System.out.println(ex);
@@ -26,9 +66,9 @@ public class FoodCategory_DAO {
                 ConnectDB.closeConnection(conn);
             }
         }
-        return false; 
+        return false;
     }
-    
+
     public boolean update(String name, int id) {
         conn = ConnectDB.getConnection();
         if (conn != null) {

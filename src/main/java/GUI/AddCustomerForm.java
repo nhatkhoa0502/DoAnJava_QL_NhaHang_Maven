@@ -1,26 +1,32 @@
 package GUI;
 
 import BUS.Customer_BUS;
+import DTO.Customer_DTO;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 public class AddCustomerForm extends javax.swing.JFrame {
-    
-    private boolean check = false;
 
-    public AddCustomerForm() {
+    Manager_GUI managerGUI;
+    Customer_DTO customerDTO;
+
+    public AddCustomerForm(Manager_GUI managerGUI) {
+        this.managerGUI = managerGUI;
         initComponents();
         setLocationRelativeTo(null);
     }
 
-    public boolean isCheck() {
-        return check;
-    }        
-
-    public void showMessage(String message) {
-        JOptionPane.showMessageDialog(null, message);
+    public AddCustomerForm(Manager_GUI managerGUI, Customer_DTO customerDTO) {
+        this.managerGUI = managerGUI;
+        initComponents();
+        setLocationRelativeTo(null);
+        
+        txtPhoneNumber.setText(customerDTO.getPhoneNumber());
+        txtName.setText(customerDTO.getName());
+        this.customerDTO = customerDTO;
+        btnOK.setText("Sửa");
     }
 
     public JButton getBtnCancel() {
@@ -143,11 +149,23 @@ public class AddCustomerForm extends javax.swing.JFrame {
         String name = txtName.getText();
         String phone = txtPhoneNumber.getText();
         if (name != "" && phone != "") {
-            check = true;
             Customer_BUS t = new Customer_BUS();
-            t.insert(name, phone);                    
+            if (customerDTO == null) {
+                t.insert(name, phone);
+                JOptionPane.showMessageDialog(null, "Thêm khách hàng thành công", "Output", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                customerDTO.setName(name);
+                customerDTO.setPhoneNumber(phone);
+                if (t.update(customerDTO)) {
+                    JOptionPane.showMessageDialog(null, "Sửa khách hàng thành công", "Output", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+            managerGUI.renderCustomer();
+            setVisible(false);
+        } else {
+            JOptionPane.showMessageDialog(null, "Vui lòng điền đầy đủ thông tin", "Output", JOptionPane.INFORMATION_MESSAGE);
         }
-        setVisible(false);
+
     }//GEN-LAST:event_btnOKActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed

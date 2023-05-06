@@ -323,6 +323,24 @@ public class Manager_GUI extends JPanel {
         String status = (String) tblData.getValueAt(tblData.getSelectedRow(), 2);
         return new Table_DTO(id, name, status.equals("Trống") ? "free" : "serving");
     }
+    
+    public Customer_DTO getCustomerRowSelected() {
+        int id = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
+        String name = (String) tblData.getValueAt(tblData.getSelectedRow(), 1);
+        String phone = (String) tblData.getValueAt(tblData.getSelectedRow(), 2);
+        return new Customer_DTO(id, name, phone);
+    }
+    
+    public FoodItem_DTO getFoodItemRowSelected() {
+        int id = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
+        String name = (String) tblData.getValueAt(tblData.getSelectedRow(), 1);
+        String description = (String) tblData.getValueAt(tblData.getSelectedRow(), 2);
+        String urlImage = (String) tblData.getValueAt(tblData.getSelectedRow(), 3);
+        String unitName = (String) tblData.getValueAt(tblData.getSelectedRow(), 4);
+        int unitPrice = (int) tblData.getValueAt(tblData.getSelectedRow(), 5);        
+        int idCategory = (int) tblData.getValueAt(tblData.getSelectedRow(), 6);
+        return new FoodItem_DTO(id, name, description, urlImage, unitName, unitPrice, idCategory);
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -438,6 +456,12 @@ public class Manager_GUI extends JPanel {
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         String menuItemActive = getMenuItemActive().getId();
         switch (menuItemActive) {
+            case "qlma":
+                new AddFoodItemForm(this).setVisible(true);
+                break;
+            case "qlkh":
+                new AddCustomerForm(this).setVisible(true);
+                break;
             case "qlb":
                 new AddTableForm(this).setVisible(true);
                 break;
@@ -467,6 +491,16 @@ public class Manager_GUI extends JPanel {
             JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng muốn sửa!", "Output", JOptionPane.INFORMATION_MESSAGE);
         }
         switch (menuItemActive) {
+            case "qlma":
+                if (tblData.getSelectedRow() >= 0) {
+                    new AddFoodItemForm(this, getFoodItemRowSelected()).setVisible(true);
+                }
+                break;
+            case "qlkh":
+                if (tblData.getSelectedRow() >= 0) {
+                    new AddCustomerForm(this, getCustomerRowSelected()).setVisible(true);
+                }
+                break;
             case "qlb":
                 if (tblData.getSelectedRow() >= 0) {
                     new AddTableForm(this, getTableRowSelected()).setVisible(true);
@@ -507,6 +541,32 @@ public class Manager_GUI extends JPanel {
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         String menuItemActive = getMenuItemActive().getId();
         switch (menuItemActive) {
+            case "qlma":
+                if (tblData.getSelectedRow() < 0) {
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng muốn xóa!", "Output", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    int confirm = JOptionPane.showConfirmDialog(null, "Xác nhận xóa", "Confirm", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        int idSelected = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
+                        FoodItem_BUS t = new FoodItem_BUS();
+                        t.delete(idSelected);       
+                        renderFoodItem();                                             
+                    }
+                }
+                break;
+            case "qlkh":
+                if (tblData.getSelectedRow() < 0) {
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng muốn xóa!", "Output", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    int confirm = JOptionPane.showConfirmDialog(null, "Xác nhận xóa", "Confirm", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        int idSelected = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
+                        Customer_BUS t = new Customer_BUS();
+                        t.delete(idSelected);       
+                        renderCustomer();                                             
+                    }
+                }
+                break;
             case "qlb":
                 if (tblData.getSelectedRow() < 0) {
                     JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng muốn xóa!", "Output", JOptionPane.INFORMATION_MESSAGE);

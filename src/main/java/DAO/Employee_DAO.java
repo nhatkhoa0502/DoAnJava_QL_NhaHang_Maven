@@ -1,7 +1,6 @@
 package DAO;
 
 import DTO.Employee_DTO;
-import DTO.Session_DTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,15 +13,15 @@ import java.util.logging.Logger;
 public class Employee_DAO {
 
     private Connection conn;
-    
-    public boolean deleteEmployeeById(int id){
+
+    public boolean deleteEmployeeById(int id) {
         conn = ConnectDB.getConnection();
         if (conn != null) {
-            try {                 
-                String sql = "DELETE FROM `employee` WHERE `id` = '" + id +"';";
+            try {
+                String sql = "DELETE FROM `employee` WHERE `id` = '" + id + "';";
                 Statement stmt = conn.createStatement();
                 int i = stmt.executeUpdate(sql);
-                System.out.println(i+ " hang duoc cap nhap ");
+                System.out.println(i + " hang duoc cap nhap ");
                 return true;
             } catch (SQLException ex) {
                 System.out.println(ex);
@@ -30,19 +29,19 @@ public class Employee_DAO {
                 ConnectDB.closeConnection(conn);
             }
         }
-        return false; 
+        return false;
     }
-    
-    public boolean updateEmployee(Employee_DTO employeeDTO){
+
+    public boolean updateEmployee(Employee_DTO employeeDTO) {
         conn = ConnectDB.getConnection();
         if (conn != null) {
             try {
                 String sql = "UPDATE `employee` SET `username` = ?, `password` = ?, `name` = ?, `phoneNumber` = ?, `permission` = ?, `salary` = ? WHERE `id` = ?;";
                 PreparedStatement preparedStmt = conn.prepareStatement(sql);
                 preparedStmt.setString(1, employeeDTO.getUsername());
-                preparedStmt.setString(2, employeeDTO.getPassword());              
-                preparedStmt.setString(3, employeeDTO.getName());        
-                preparedStmt.setString(4, employeeDTO.getPhoneNumber());                   
+                preparedStmt.setString(2, employeeDTO.getPassword());
+                preparedStmt.setString(3, employeeDTO.getName());
+                preparedStmt.setString(4, employeeDTO.getPhoneNumber());
                 preparedStmt.setString(5, employeeDTO.getPermission());
                 preparedStmt.setInt(6, employeeDTO.getSalary());
                 preparedStmt.setInt(7, employeeDTO.getId());
@@ -56,17 +55,17 @@ public class Employee_DAO {
         }
         return false;
     }
-    
-    public boolean addEmployee(Employee_DTO employeeDTO){
+
+    public boolean addEmployee(Employee_DTO employeeDTO) {
         conn = ConnectDB.getConnection();
         if (conn != null) {
             try {
                 String sql = "INSERT INTO `employee` (username, password, name, phoneNumber, startDate, permission,salary) VALUES (?,?,?,?,?,?,?);";
                 PreparedStatement preparedStmt = conn.prepareStatement(sql);
                 preparedStmt.setString(1, employeeDTO.getUsername());
-                preparedStmt.setString(2, employeeDTO.getPassword());              
-                preparedStmt.setString(3, employeeDTO.getName());        
-                preparedStmt.setString(4, employeeDTO.getPhoneNumber());   
+                preparedStmt.setString(2, employeeDTO.getPassword());
+                preparedStmt.setString(3, employeeDTO.getName());
+                preparedStmt.setString(4, employeeDTO.getPhoneNumber());
                 preparedStmt.setTimestamp(5, employeeDTO.getStartDate());
                 preparedStmt.setString(6, employeeDTO.getPermission());
                 preparedStmt.setInt(7, employeeDTO.getSalary());
@@ -80,15 +79,15 @@ public class Employee_DAO {
         }
         return false;
     }
-    
-    public int getId(String username){
+
+    public int getId(String username) {
         conn = ConnectDB.getConnection();
         if (conn != null) {
             try {
-                String sql = "Select id from employee WHERE `username` = '" + username +"';";
+                String sql = "Select id from employee WHERE `username` = '" + username + "';";
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
-                if(rs.next()) {
+                if (rs.next()) {
                     return rs.getInt(1);
                 }
             } catch (SQLException ex) {
@@ -99,7 +98,7 @@ public class Employee_DAO {
         }
         return 0;
     }
-    
+
     public Vector<Employee_DTO> getAllEmployee() {
         conn = ConnectDB.getConnection();
         Vector<Employee_DTO> vectorEmployee = new Vector<Employee_DTO>();
@@ -142,6 +141,8 @@ public class Employee_DAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectDB.closeConnection(conn);
         }
         return "";
     }
@@ -168,6 +169,8 @@ public class Employee_DAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectDB.closeConnection(conn);
         }
         return employeeTemp;
     }
@@ -185,10 +188,12 @@ public class Employee_DAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectDB.closeConnection(conn);
         }
         return "";
     }
-    
+
     public String getName(String username) {
         conn = ConnectDB.getConnection();
         System.out.println("ursname DAO; " + username);
@@ -205,6 +210,8 @@ public class Employee_DAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectDB.closeConnection(conn);
         }
         return "";
     }
@@ -224,6 +231,8 @@ public class Employee_DAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectDB.closeConnection(conn);
         }
         return false;
     }

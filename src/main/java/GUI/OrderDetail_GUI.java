@@ -289,6 +289,8 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         jLabel21 = new javax.swing.JLabel();
         lbCash = new javax.swing.JLabel();
         lbChange = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
         pnlRight = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -475,7 +477,7 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel13.setText("VND");
-        jPanel5.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 70, -1, -1));
+        jPanel5.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 200, -1, -1));
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel15.setText("%");
@@ -486,7 +488,7 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
 
         lbCustomerName.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbCustomerName.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel5.add(lbCustomerName, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, 110, 20));
+        jPanel5.add(lbCustomerName, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, 120, 20));
 
         jLabel19.setText("Trạng thái:");
         jPanel5.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 43, -1, -1));
@@ -504,11 +506,19 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
 
         lbCash.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbCash.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel5.add(lbCash, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 170, 110, 20));
+        jPanel5.add(lbCash, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 170, 80, 20));
 
         lbChange.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lbChange.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel5.add(lbChange, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 200, 110, 20));
+        jPanel5.add(lbChange, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 200, 100, 20));
+
+        jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel14.setText("VND");
+        jPanel5.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 70, -1, -1));
+
+        jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel22.setText("VND");
+        jPanel5.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 170, -1, -1));
 
         jPanel4.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 250, 280));
 
@@ -734,6 +744,7 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
     private javax.swing.JComboBox cboTable;
     private javax.swing.JComboBox<String> cboType;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
@@ -741,6 +752,7 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;

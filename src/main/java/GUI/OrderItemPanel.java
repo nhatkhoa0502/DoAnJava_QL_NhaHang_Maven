@@ -1,29 +1,32 @@
 package GUI;
 
+import BUS.ImageManager;
 import DTO.FoodItem_DTO;
+import javax.swing.ImageIcon;
 
 public class OrderItemPanel extends javax.swing.JPanel {
 
     FoodItem_DTO foodItem;
-    
+
     public OrderItemPanel(FoodItem_DTO o) {
         initComponents();
         this.foodItem = o;
         render();
     }
-    
+
     public void render() {
-        int idOrderItem = foodItem.getId();                            
+        int idOrderItem = foodItem.getId();
         String foodName = foodItem.getName();
-        int foodPrice = foodItem.getUnitPrice();                
+        int foodPrice = foodItem.getUnitPrice();
         lbFoodName.setText(foodName);
         lbPrice.setText(foodPrice + "");
-        
-//        String urlImage = orderItem.getFoodItem().getUrlImage();
-//        if (urlImage != null && !urlImage.isEmpty()) {
-//            ImageIcon ic = im.getImage(urlImage);
-//            lbIcon.setIcon(im.resizeIcon(ic, 75, 75));
-//        }
+
+        String urlImage = foodItem.getUrlImage();
+        ImageManager im = new ImageManager();
+        if (urlImage != null && !urlImage.isEmpty()) {
+            ImageIcon ic = im.getImage(urlImage);
+            lbIcon.setIcon(im.resizeIcon(ic, 75, 75));
+        }
     }
 
     @SuppressWarnings("unchecked")

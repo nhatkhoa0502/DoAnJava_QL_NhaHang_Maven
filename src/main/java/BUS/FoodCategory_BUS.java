@@ -7,7 +7,16 @@ import java.util.Vector;
 public class FoodCategory_BUS {
 
     private FoodCategory_DAO foodCategoryDAO = new FoodCategory_DAO();
-
+    
+    
+    public String getName(int id){
+        return foodCategoryDAO.getName(id);
+    }
+    
+    public int getId(String name){
+        return foodCategoryDAO.getId(name);
+    }
+    
     public boolean delete(int id){
         return foodCategoryDAO.delete(id);
     }

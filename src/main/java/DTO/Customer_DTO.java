@@ -11,6 +11,12 @@ public class Customer_DTO {
     public Customer_DTO() {
     }
 
+    public Customer_DTO(int id, String phoneNumber, String name) {
+        this.id = id;
+        this.phoneNumber = phoneNumber;
+        this.name = name;
+    }        
+
     public Timestamp getDateCreate() {
         return dateCreate;
     }

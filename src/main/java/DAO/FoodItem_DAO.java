@@ -2,14 +2,82 @@ package DAO;
 
 import DTO.FoodItem_DTO;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Vector;
 
 public class FoodItem_DAO {
 
     private Connection conn;
+
+    public boolean delete(int id) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "DELETE FROM `food_item` WHERE `id` = '" + id + "';";
+                Statement stmt = conn.createStatement();
+                int i = stmt.executeUpdate(sql);
+                System.out.println(i + " hang trong 'food_item' dc xóa");
+                return true;
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return false;
+    }
+
+    public boolean update(FoodItem_DTO foodItem) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            System.out.println("foodItem DAO: " + foodItem.toString());
+            try {
+                String sql = "UPDATE `food_item` SET `name` = ?,`description` = ?,`unitName` = ?,`unitPrice` = ?,`idCategory` = ? WHERE `id` = ?;";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setString(1, foodItem.getName());
+                preparedStmt.setString(2, foodItem.getDescription());
+                preparedStmt.setString(3, foodItem.getUnitName());
+                preparedStmt.setInt(4, foodItem.getUnitPrice());
+                preparedStmt.setInt(5, foodItem.getIdCategory());
+                preparedStmt.setInt(6, foodItem.getId());
+                int i = preparedStmt.executeUpdate();
+                System.out.println(i + " dong dc chinh sua trong bang 'food_item'");
+                return true;
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return false;
+    }
+
+    public boolean insert(FoodItem_DTO foodItem) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "insert into `food_item`(name, description, unitName, unitPrice, idCategory) values (?, ?, ?, ?, ?);";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setString(1, foodItem.getName());
+                preparedStmt.setString(2, foodItem.getDescription());
+                preparedStmt.setString(3, foodItem.getUnitName());
+                preparedStmt.setInt(4, foodItem.getUnitPrice());
+                preparedStmt.setInt(5, foodItem.getIdCategory());
+                int i = preparedStmt.executeUpdate();
+                System.out.println(i + " dong dc them vao bang 'food_item'");
+                return true;
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return false;
+    }
 
     public FoodItem_DTO getFoodItemById(int id) {
         conn = ConnectDB.getConnection();

@@ -16,6 +16,45 @@ public class Customer_DAO {
 
     private Connection conn;
 
+    public boolean delete(int id){
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "DELETE FROM `customer` WHERE `id` = '" + id + "';";
+                Statement stmt = conn.createStatement();
+                int i = stmt.executeUpdate(sql);
+                System.out.println(i + " hang duoc cap nhap ");
+                return true;
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return false;
+    }
+    
+    public boolean update(Customer_DTO customer){
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "UPDATE `customer` SET `name` = ?, `phoneNumber` = ? WHERE `id` = ?;";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setString(1, customer.getName());
+                preparedStmt.setString(2, customer.getPhoneNumber());
+                preparedStmt.setInt(3, customer.getId());
+                int i = preparedStmt.executeUpdate();
+                System.out.println(i + " dong trong bang 'customer' dc sua ");
+                return true;
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return false;
+    }
+    
     public Vector<Customer_DTO> getAllCustomer() {
         conn = ConnectDB.getConnection();
         Vector<Customer_DTO> vectorCustomer = new Vector<Customer_DTO>();
@@ -49,7 +88,7 @@ public class Customer_DAO {
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
                 if (rs.next()) {
-                    return rs.getInt(1); 
+                    return rs.getInt(1);
                 }
             } catch (SQLException ex) {
                 System.out.println(ex);
@@ -93,6 +132,8 @@ public class Customer_DAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectDB.closeConnection(conn);
         }
         return 0;
     }
@@ -110,6 +151,8 @@ public class Customer_DAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(Employee_DAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ConnectDB.closeConnection(conn);
         }
         return "";
     }

@@ -9,6 +9,20 @@ import java.util.Vector;
 public class FoodItem_BUS {
     FoodItem_DAO foodItemDAO = new FoodItem_DAO();
     
+    public boolean delete(int id){
+        return foodItemDAO.delete(id);
+    }
+    
+    public boolean update(FoodItem_DTO foodItem){    
+        return foodItemDAO.update(foodItem);
+    }
+    
+    public boolean insert(FoodItem_DTO foodItem, String strCategory){
+        FoodCategory_BUS foodCategoryBUS = new FoodCategory_BUS();        
+        foodItem.setIdCategory(foodCategoryBUS.getId(strCategory));
+        return foodItemDAO.insert(foodItem);
+    }
+    
     public FoodItem_DTO getFoodItemById(int id){
         return foodItemDAO.getFoodItemById(id);
     }
