@@ -13,7 +13,26 @@ import java.util.logging.Logger;
 public class Employee_DAO {
 
     private Connection conn;
-
+            
+    public int getCountAll(){
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "SELECT COUNT(*) FROM `employee`";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
+    
     public boolean deleteEmployeeById(int id) {
         conn = ConnectDB.getConnection();
         if (conn != null) {

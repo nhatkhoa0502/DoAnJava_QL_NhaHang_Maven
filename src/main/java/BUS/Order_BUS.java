@@ -11,6 +11,21 @@ import java.util.Vector;
 public class Order_BUS {
     private Order_DAO orDAO = new Order_DAO();
     
+    public int getInComeByTime(Date startTime, Date endTime){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String startDateFormat = dateFormat.format(startTime);
+        String endDateFormat = dateFormat.format(endTime);
+        return orDAO.getInComeByTime(startDateFormat,endDateFormat);
+    }
+    
+    public int getTotalInCome(){
+        return orDAO.getTotalInCome();
+    }
+    
+    public int countAllOrder(){
+        return orDAO.countAllOrder();
+    }
+    
     public void cancelOrderById(int id){
         orDAO.cancelOrderById(id);
     }

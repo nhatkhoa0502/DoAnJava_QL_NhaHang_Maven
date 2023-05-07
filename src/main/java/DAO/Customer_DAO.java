@@ -16,6 +16,47 @@ public class Customer_DAO {
 
     private Connection conn;
 
+    public int getCountCustomerByTime(String startTime, String endTime) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "SELECT COUNT(id) FROM `customer` WHERE `dateCreate` BETWEEN ? AND ?;";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setString(1, startTime);
+                preparedStmt.setString(2, endTime);
+                ResultSet rs = preparedStmt.executeQuery();
+                if (rs.next()) {
+                    System.out.println("count customer in time: " + rs.getInt(1));
+                    return rs.getInt(1);
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
+    
+    public int getCountAll(){
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "SELECT COUNT(*) FROM `customer`";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
+    
     public boolean delete(int id){
         conn = ConnectDB.getConnection();
         if (conn != null) {

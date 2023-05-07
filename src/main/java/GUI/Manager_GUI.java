@@ -218,7 +218,7 @@ public class Manager_GUI extends JPanel {
     }
 
     public void renderOrder() {
-        btnDelete.setText("Hủy");
+        btnDelete.setVisible(false);
         btnEdit.setVisible(false);
         // xoa du lieu trong model
         model.setRowCount(0);

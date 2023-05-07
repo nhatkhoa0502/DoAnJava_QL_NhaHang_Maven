@@ -7,7 +7,11 @@ import java.util.Vector;
 public class Customer_BUS {
 
     private Customer_DAO ctmDAO = new Customer_DAO();
-
+    
+    public int getCountAll(){
+        return ctmDAO.getCountAll();
+    }
+    
     public boolean delete(int id){
         return ctmDAO.delete(id);
     }

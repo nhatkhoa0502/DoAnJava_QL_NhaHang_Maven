@@ -23,7 +23,8 @@ public class Main_GUI extends javax.swing.JFrame {
 
     private Vector<MenuItem> vectorMenuItem = new Vector<>();
     private Manager_GUI managerGUI;
-    private Statistical_GUI statiscalGUI = new Statistical_GUI();
+    private Statistical_GUI statiscalGUI = new Statistical_GUI();;
+    
     private Employee_BUS employeeBUS = new Employee_BUS();
     private Statistical_BUS statisticalBUS = new Statistical_BUS();
     
@@ -39,6 +40,7 @@ public class Main_GUI extends javax.swing.JFrame {
         addEventForMenuItem();
         addName();
         statisticalBUS.writeLoginTime(username,password);
+        statiscalGUI.renderAllDataSession();
         
         setSize(1250, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -161,7 +163,7 @@ public class Main_GUI extends javax.swing.JFrame {
             managerGUI.renderOrder();
         } else if (menuItem.getId().equals("thongke")) {
             managerGUI.setVisible(false);
-            statiscalGUI.setVisible(true);
+            statiscalGUI.setVisible(true);            
         }
     }
 

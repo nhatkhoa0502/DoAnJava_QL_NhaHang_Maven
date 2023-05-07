@@ -10,7 +10,73 @@ import java.util.Vector;
 public class Statistical_DAO {
 
     private Connection conn;
-
+    
+    public int getQuantityByIdFoodItemAndTime(int id, String startTime, String endTime) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "select SUM(quantity) from `order` o, `order_item` oi " +
+                             "where o.id = oi.idOrder AND idFoodItem = ? AND `orderDate` BETWEEN ? AND ?;";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setInt(1, id);
+                preparedStmt.setString(2, startTime);
+                preparedStmt.setString(3, endTime);
+                ResultSet rs = preparedStmt.executeQuery();
+                if (rs.next()) {
+                    System.out.println("count quantity food item in time: " + rs.getInt(1));
+                    return rs.getInt(1);
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
+    
+    public int getCountAllEmployee() {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "SELECT COUNT(DISTINCT `idEmployee`) FROM `session`;";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);           
+                ResultSet rs = preparedStmt.executeQuery();
+                if (rs.next()) {
+                    System.out.println("count employee in time: " + rs.getInt(1));
+                    return rs.getInt(1);
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
+    
+    public int getCountEmployeeByTime(String startTime, String endTime) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "SELECT COUNT(DISTINCT `idEmployee`) FROM `session` WHERE `startTime` BETWEEN ? AND ?;";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setString(1, startTime);
+                preparedStmt.setString(2, endTime);
+                ResultSet rs = preparedStmt.executeQuery();
+                if (rs.next()) {
+                    System.out.println("count employee in time: " + rs.getInt(1));
+                    return rs.getInt(1);
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
+    
     public Vector<Session_DTO> getAllSessionEmployees() {
         conn = ConnectDB.getConnection();
         Vector<Session_DTO> arr = new Vector<Session_DTO>();

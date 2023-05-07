@@ -2,12 +2,18 @@ package BUS;
 
 import DAO.Employee_DAO;
 import DTO.Employee_DTO;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import java.util.Vector;
 
 public class Employee_BUS {
 
-    private Employee_DAO emd = new Employee_DAO();
+    private Employee_DAO emd = new Employee_DAO();        
+    
+    public int getCountAll(){
+        return emd.getCountAll();
+    }
     
     public boolean deleteEmployeeById(int id){
         return emd.deleteEmployeeById(id);

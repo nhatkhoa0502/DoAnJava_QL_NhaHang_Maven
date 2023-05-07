@@ -12,6 +12,25 @@ public class OrderItem_DAO {
     
     private Connection conn;
     
+    public int getQuantityByIdFoodItem(int id){
+        conn = ConnectDB.getConnection();        
+        if (conn != null) {
+            try {
+                String sql = "SELECT SUM(quantity) FROM `order_item` WHERE `idFoodItem` = '" + id + "';";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if(rs.next()) {                    
+                    return rs.getInt(1);                    
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
+    
      public Vector<OrderItem_DTO> getByIdOrder(int id){
         conn = ConnectDB.getConnection();
         Vector<OrderItem_DTO> vectorOrderItem = new Vector<OrderItem_DTO>();

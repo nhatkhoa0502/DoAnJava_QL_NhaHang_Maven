@@ -12,8 +12,67 @@ import java.util.Vector;
 public class Order_DAO {
 
     private Connection conn;
+    
+    public int getInComeByTime(String startTime, String endTime) {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "SELECT SUM(totalAmount) FROM `order` WHERE `status` = 'paid' AND `orderDate` BETWEEN ? AND ?;";
+                PreparedStatement preparedStmt = conn.prepareStatement(sql);
+                preparedStmt.setString(1, startTime);
+                preparedStmt.setString(2, endTime);
+                ResultSet rs = preparedStmt.executeQuery();
+                if (rs.next()) {
+                    System.out.println("total in come: " + rs.getInt(1));
+                    return rs.getInt(1);
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
+    public int getTotalInCome() {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "SELECT SUM(totalAmount) FROM `order` WHERE `status` = 'paid';";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
+    
+    public int countAllOrder() {
+        conn = ConnectDB.getConnection();
+        if (conn != null) {
+            try {
+                String sql = "SELECT COUNT(*) FROM `order` WHERE `status` = 'paid';";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            } finally {
+                ConnectDB.closeConnection(conn);
+            }
+        }
+        return 0;
+    }
 
-    public void cancelOrderById(int id){
+    public void cancelOrderById(int id) {
         conn = ConnectDB.getConnection();
         if (conn != null) {
             try {
@@ -28,17 +87,17 @@ public class Order_DAO {
             }
         }
     }
-    
-    public void updateData(Order_DTO order){
+
+    public void updateData(Order_DTO order) {
         conn = ConnectDB.getConnection();
         if (conn != null) {
             try {
                 String sql = "UPDATE `order` SET `totalAmount` = ?, `cash` = ?, `change` = ?, `discount` = ? WHERE `id` = ?;";
                 PreparedStatement preparedStmt = conn.prepareStatement(sql);
-                preparedStmt.setInt(1,order.getTotalAmount());
-                preparedStmt.setInt(2,order.getCash());              
-                preparedStmt.setInt(3, order.getChange());        
-                preparedStmt.setInt(4, order.getDiscount());   
+                preparedStmt.setInt(1, order.getTotalAmount());
+                preparedStmt.setInt(2, order.getCash());
+                preparedStmt.setInt(3, order.getChange());
+                preparedStmt.setInt(4, order.getDiscount());
                 preparedStmt.setInt(5, order.getId());
                 preparedStmt.execute();
             } catch (SQLException ex) {
@@ -48,7 +107,7 @@ public class Order_DAO {
             }
         }
     }
-    
+
     public boolean idIsExist(int id) {
         conn = ConnectDB.getConnection();
         if (conn != null) {
@@ -167,13 +226,13 @@ public class Order_DAO {
         conn = ConnectDB.getConnection();
         if (conn != null) {
             try {
-                String sql = "SELECT COUNT(id) FROM `order` WHERE `orderDate` BETWEEN ? AND ?;";
+                String sql = "SELECT COUNT(id) FROM `order` WHERE `status`='paid' AND `orderDate` BETWEEN ? AND ?;";
                 PreparedStatement preparedStmt = conn.prepareStatement(sql);
                 preparedStmt.setString(1, startTime);
                 preparedStmt.setString(2, endTime);
                 ResultSet rs = preparedStmt.executeQuery();
                 if (rs.next()) {
-                    System.out.println("count: " + rs.getInt(1));
+                    System.out.println("count order: " + rs.getInt(1));
                     return rs.getInt(1);
                 }
             } catch (SQLException ex) {

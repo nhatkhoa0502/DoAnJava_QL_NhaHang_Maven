@@ -33,7 +33,7 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
     Vector<FoodItem_DTO> vectorFoodItem = new Vector<FoodItem_DTO>();
     Vector<FoodItemPane> vectorFoodItemPane = new Vector<FoodItemPane>();
     Vector<FoodItem_DTO> vectorFoodItemOrder = new Vector<FoodItem_DTO>();
-    Vector<OrderItem_DTO> vectorOrderItem = new Vector<OrderItem_DTO>();
+//    Vector<OrderItem_DTO> vectorOrderItem = new Vector<OrderItem_DTO>();
 
     Order_DTO dataOrder = new Order_DTO();
     Order_BUS orderBUS = new Order_BUS();
@@ -681,7 +681,7 @@ public class OrderDetail_GUI extends javax.swing.JFrame {
         initDataOrder();
         dataOrder.setStatus("cancel");
         orderBUS.insertData(dataOrder);
-        orderItemBUS.inserData(dataOrder.getId(), vectorFoodItemOrder);
+//        orderItemBUS.inserData(dataOrder.getId(), vectorFoodItemOrder);
         setVisible(false);
         JOptionPane.showMessageDialog(null, "Hủy thành công!", "Output", JOptionPane.INFORMATION_MESSAGE);
         managerGUI.renderOrder();

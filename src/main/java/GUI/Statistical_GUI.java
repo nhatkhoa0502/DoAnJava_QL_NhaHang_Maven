@@ -1,80 +1,141 @@
 package GUI;
 
+import BUS.Customer_BUS;
+import BUS.Employee_BUS;
 import BUS.Order_BUS;
 import BUS.Statistical_BUS;
+import DTO.FoodItem_DTO;
 import DTO.Session_DTO;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class Statistical_GUI extends javax.swing.JPanel {
-
+    
     Vector<Session_DTO> vectorSession = new Vector<Session_DTO>();
-    DefaultTableModel model = new DefaultTableModel();
-    Statistical_BUS sttBUS = new Statistical_BUS();
-
+    DefaultTableModel modelSession = new DefaultTableModel();
+    Vector<FoodItem_DTO> vectorFoodItem = new Vector<FoodItem_DTO>();
+    DefaultTableModel modelProduct = new DefaultTableModel();
+    
+    Statistical_BUS statisticalBUS = new Statistical_BUS();
+    Order_BUS orderBUS = new Order_BUS();
+    Employee_BUS employeeBUS = new Employee_BUS();
+    Customer_BUS customerBUS = new Customer_BUS();
+    
     public Statistical_GUI() {
         initComponents();
-        setStartEndDate();
-        tblSession.setModel(model);
+        tblSession.setModel(modelSession);
+        tblProduct.setModel(modelProduct);
         setIconImg();
         setupHeader(tblProduct);
         setupHeader(tblSession);
+//        setStartEndDate();
+        
+        lbTotalOrder.setText("" + orderBUS.countAllOrder());
+        lbTotalIncome.setText("" + orderBUS.getTotalInCome());
+        lbTotalEmployee.setText("" + statisticalBUS.getCountAllEmployee());
+        lbTotalCustomer.setText("" + customerBUS.getCountAll());
+        
         renderAllDataSession();
+        renderAllProduct();
+        
         setVisible(true);
     }
-
+        
+     private void renderProductByTime(Date startTime, Date endTime) {
+        vectorFoodItem = statisticalBUS.getAllFoodItem();
+        modelProduct.setRowCount(0);
+        modelProduct.setColumnCount(0);
+        
+        modelProduct.addColumn("ID");
+        modelProduct.addColumn("Tên món");
+        modelProduct.addColumn("Số lượng");
+        
+        int id, quantity;
+        String name;
+        
+        for (int i = 0; i < vectorFoodItem.size(); i++) {
+            id = vectorFoodItem.get(i).getId();
+            name = vectorFoodItem.get(i).getName();
+            quantity = statisticalBUS.getQuantityByIdFoodItemAndTime(id,startTime,endTime);
+            modelProduct.addRow(new Object[]{id, name, quantity});
+        }
+    }
+    
+    private void renderAllProduct() {
+        vectorFoodItem = statisticalBUS.getAllFoodItem();
+        modelProduct.setRowCount(0);
+        modelProduct.setColumnCount(0);
+        
+        modelProduct.addColumn("ID");
+        modelProduct.addColumn("Tên món");
+        modelProduct.addColumn("Số lượng");
+        
+        int id, quantity;
+        String name;
+        
+        for (int i = 0; i < vectorFoodItem.size(); i++) {
+            id = vectorFoodItem.get(i).getId();
+            name = vectorFoodItem.get(i).getName();
+            quantity = statisticalBUS.getQuantityByIdFoodItem(id);
+            modelProduct.addRow(new Object[]{id, name, quantity});
+        }
+    }
+    
+    
     private void setStartEndDate() {
         Date currentDate = new Date();
-        // Lấy ngày cách ngày hiện tại 15 ngày
         long millisecondsPerDay = 24 * 60 * 60 * 1000; // 1 ngày = 24 giờ x 60 phút x 60 giây x 1000 milliseconds
-        long fifteenDaysInMilliseconds = 15 * millisecondsPerDay;
-        long fifteenDaysLaterFromNow = currentDate.getTime() + fifteenDaysInMilliseconds;
-        long fifteenDaysBeforeFromNow = currentDate.getTime() - fifteenDaysInMilliseconds;
-        Date fifteenDaysLater = new Date(fifteenDaysLaterFromNow);
-        Date fifteenDaysBefore = new Date(fifteenDaysBeforeFromNow);        
-        dateChooserStart.setDate(fifteenDaysBefore);
-        dateChooserEnd.setDate(fifteenDaysLater);
-        
-        System.out.println("Ngay 15 ngay truoc la: " + fifteenDaysBefore);
-        System.out.println("Ngay 15 ngay sau la: " + fifteenDaysLater);
-        System.out.println("millisecondsPerDay: " + millisecondsPerDay);
-        long hqua = currentDate.getTime() - millisecondsPerDay;
-        System.out.println("hom qua: " + hqua);
-        System.out.println("before: " + fifteenDaysBeforeFromNow);
-        System.out.println("now: " + currentDate.getTime());
-        System.out.println("later: " + fifteenDaysLaterFromNow);           
-        
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String currentDateFormat = dateFormat.format(currentDate);
-        System.out.println("currentDate  format: " + currentDateFormat);
-    }
+        Date tomorrow = new Date(millisecondsPerDay + currentDate.getTime());
+        dateChooserStart.setDate(currentDate);
+        dateChooserEnd.setDate(tomorrow);
 
+//        Date currentDate = new Date();
+//        // Lấy ngày cách ngày hiện tại 15 ngày
+//        long millisecondsPerDay = 24 * 60 * 60 * 1000; // 1 ngày = 24 giờ x 60 phút x 60 giây x 1000 milliseconds
+//        long fifteenDaysInMilliseconds = 15 * millisecondsPerDay;
+//        long fifteenDaysLaterFromNow = currentDate.getTime() + fifteenDaysInMilliseconds;
+//        long fifteenDaysBeforeFromNow = currentDate.getTime() - fifteenDaysInMilliseconds;
+//        Date fifteenDaysLater = new Date(fifteenDaysLaterFromNow);
+//        Date fifteenDaysBefore = new Date(fifteenDaysBeforeFromNow);
+//        dateChooserStart.setDate(fifteenDaysBefore);
+//        dateChooserEnd.setDate(fifteenDaysLater);
+//        System.out.println("Ngay 15 ngay truoc la: " + fifteenDaysBefore);
+//        System.out.println("Ngay 15 ngay sau la: " + fifteenDaysLater);
+//        System.out.println("millisecondsPerDay: " + millisecondsPerDay);
+//        long hqua = currentDate.getTime() - millisecondsPerDay;
+//        System.out.println("hom qua: " + hqua);
+//        System.out.println("before: " + fifteenDaysBeforeFromNow);
+//        System.out.println("now: " + currentDate.getTime());
+//        System.out.println("later: " + fifteenDaysLaterFromNow);
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//        String currentDateFormat = dateFormat.format(currentDate);
+//        System.out.println("currentDate  format: " + currentDateFormat);
+    }
+    
     private void setIconImg() {
         String filePath = new File("").getAbsolutePath();
-
+        
         String pathSoHd = filePath.concat("\\src\\main\\java\\icons\\bill_50px.png");
         String pathDoanhThu = filePath.concat("\\src\\main\\java\\icons\\money_50px.png");
         String pathSoNV = filePath.concat("\\src\\main\\java\\icons\\customer_support_50px.png");
         String pathSoKH = filePath.concat("\\src\\main\\java\\icons\\customer_50px.png");
-
+        
         lblImgSoHD.setIcon(new ImageIcon(pathSoHd));
         lblImgDoanhThu.setIcon(new ImageIcon(pathDoanhThu));
         lblImgSoNV.setIcon(new ImageIcon(pathSoNV));
         lblImgSoKH.setIcon(new ImageIcon(pathSoKH));
     }
-
+    
     private void setupHeader(JTable t) {
         t.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
         t.getTableHeader().setBackground(new Color(51, 175, 255));
@@ -82,75 +143,62 @@ public class Statistical_GUI extends javax.swing.JPanel {
         t.setShowGrid(false);//tắt đường viền của bảng
     }
     
-    public void addSessionDataForModel() { 
+    public void addSessionDataForModel() {
         // xoa du lieu trong model
-        model.setRowCount(0);
-        model.setColumnCount(0);
+        modelSession.setRowCount(0);
+        modelSession.setColumnCount(0);
         
-        model.addColumn("IDNV");
-        model.addColumn("Tên nhân viên");
-        model.addColumn("Số hóa đơn");
-        model.addColumn("Ngày bắt đầu");
-        model.addColumn("Ngày kết thúc");
-
-        // set width cho cột "IDNV" và cột "số hóa đơn"
-        tblSession.getColumnModel().getColumn(0).setPreferredWidth(10);
-        tblSession.getColumnModel().getColumn(2).setPreferredWidth(23);
-
+        modelSession.addColumn("IDNV");
+        modelSession.addColumn("Tên nhân viên");
+        modelSession.addColumn("Ngày bắt đầu");
+        modelSession.addColumn("Ngày kết thúc");
+        
         int IDNV;
         String nameNV;
         Timestamp timeStart, timeEnd;
-
+        
         for (int i = 0; i < vectorSession.size(); i++) {
             IDNV = vectorSession.get(i).getIdEmployee();
             nameNV = vectorSession.get(i).getNameEmployee();
             timeStart = vectorSession.get(i).getStartTime();
             timeEnd = vectorSession.get(i).getEndTime();
-            model.addRow(new Object[]{IDNV, nameNV, 0, timeStart, timeEnd});
+            modelSession.addRow(new Object[]{IDNV, nameNV, timeStart, timeEnd});
         }
     }
     
-    public void renderAllDataSession(){
-        vectorSession = sttBUS.getAllSessionEmployees();
+    public void renderAllDataSession() {
+        vectorSession = statisticalBUS.getAllSessionEmployees();
         addSessionDataForModel();
     }
     
-    public void renderProductData() {
-
-    }
-
-    public void showMessage(String message) {
-        JOptionPane.showMessageDialog(this, message);
-    }
-
     public JLabel getLbTotalCustomer() {
         return lbTotalCustomer;
     }
-
+    
     public JLabel getLbTotalEmployee() {
         return lbTotalEmployee;
     }
-
+    
     public JLabel getLbTotalIncome() {
         return lbTotalIncome;
     }
-
+    
     public JLabel getLbTotalOrder() {
         return lbTotalOrder;
     }
-
+    
     public JDateChooser getDateChooserEnd() {
         return dateChooserEnd;
     }
-
+    
     public JDateChooser getDateChooserStart() {
         return dateChooserStart;
     }
-
+    
     public JPanel getPnlContent() {
         return pnlContent;
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -191,6 +239,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
         pnlContent = new javax.swing.JPanel();
         jPanel15 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
         tblProduct = new javax.swing.JTable();
         jPanel16 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
@@ -436,7 +485,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
         jPanel12.setLayout(new java.awt.GridBagLayout());
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel11.setText("Số Sản Phẩm");
+        jLabel11.setText("Số khách hàng");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 0.1;
@@ -470,22 +519,27 @@ public class Statistical_GUI extends javax.swing.JPanel {
         jPanel15.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel9.setText("Thống kê doanh thu theo sản phẩm");
+        jLabel9.setText("Thống kê số lượng sản phẩm bán được theo từng sản phẩm");
         jPanel15.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
 
         tblProduct.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+
             }
         ));
         tblProduct.setRowHeight(25);
-        jPanel15.add(tblProduct, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 500, 470));
+        jScrollPane2.setViewportView(tblProduct);
+
+        jPanel15.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 500, 470));
 
         pnlContent.add(jPanel15);
         jPanel15.setBounds(500, 0, 510, 640);
@@ -520,14 +574,20 @@ public class Statistical_GUI extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnThongKeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThongKeActionPerformed
-        Order_BUS orderBUS = new Order_BUS();
         Date startTime = dateChooserStart.getDate();
         Date endTime = dateChooserEnd.getDate();
         System.out.println("date start: " + dateChooserStart.getDate());
-        vectorSession = sttBUS.statisticalByTime(startTime,endTime );
+        vectorSession = statisticalBUS.statisticalSessionByTime(startTime, endTime);
         addSessionDataForModel();
         int countOrder = orderBUS.getNumOfOrderInTime(startTime, endTime);
-        lbTotalOrder.setText("" + countOrder); 
+        lbTotalOrder.setText("" + countOrder);
+        int inCome = orderBUS.getInComeByTime(startTime, endTime);
+        lbTotalIncome.setText("" + inCome);        
+        int countEmployee = statisticalBUS.getCountEmployeeByTime(startTime, endTime);
+        lbTotalEmployee.setText("" + countEmployee);
+        int countCustomer = statisticalBUS.getCountCustomerByTime(startTime, endTime);
+        lbTotalCustomer.setText("" + countCustomer); 
+        renderProductByTime(startTime, endTime);
     }//GEN-LAST:event_btnThongKeActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -559,6 +619,7 @@ public class Statistical_GUI extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lbTotalCustomer;
     private javax.swing.JLabel lbTotalEmployee;
     private javax.swing.JLabel lbTotalIncome;
