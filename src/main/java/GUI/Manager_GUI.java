@@ -34,10 +34,12 @@ import javax.swing.table.TableRowSorter;
 
 public class Manager_GUI extends JPanel {
 
-    DefaultTableModel model = new DefaultTableModel();    
+    DefaultTableModel model = new DefaultTableModel();
     Vector<MenuItem> vectorMenuItem;
-    String username;    
-    TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(); ;    
+    String username;
+    TableRowSorter<TableModel> rowSorter = new TableRowSorter<>();
+
+    ;    
     //main contructor
     public Manager_GUI(Vector<MenuItem> vectorMenuItem, String username) {
         this.username = username;
@@ -45,13 +47,13 @@ public class Manager_GUI extends JPanel {
         this.vectorMenuItem = vectorMenuItem;
         initComponents();
         settingTable();
-        setIconForButton();        
-        
+        setIconForButton();
+
         rowSorter.setModel(model);
         tblData.setModel(model);
         tblData.setRowSorter(rowSorter);
-        tblData.setRowSorter(rowSorter);  
-        addEventSearch(); 
+        tblData.setRowSorter(rowSorter);
+        addEventSearch();
     }
 
     //contructor test GUI
@@ -59,23 +61,23 @@ public class Manager_GUI extends JPanel {
         this.vectorMenuItem = vectorMenuItem;
         initComponents();
         settingTable();
-        setIconForButton();                        
+        setIconForButton();
     }
 
-    private void addEventSearch() {                        
+    private void addEventSearch() {
         txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 String text = txtSearch.getText();
                 System.out.println("them 1 ki tu");
-                System.out.println("text: " + text);                
+                System.out.println("text: " + text);
                 if (text.trim().length() == 0) {
                     rowSorter.setRowFilter(null);
-                } else {                                        
-                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));                                        
+                } else {
+                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
                 }
             }
-            
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 String text = txtSearch.getText();
@@ -83,15 +85,15 @@ public class Manager_GUI extends JPanel {
                 System.out.println("text: " + text);
                 if (text.trim().length() == 0) {
                     rowSorter.setRowFilter(null);
-                } else {                    
+                } else {
                     rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
                 }
-            }          
+            }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                throw new UnsupportedOperationException("Not supported yet."); 
-            } 
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
         });
     }
 
@@ -234,8 +236,8 @@ public class Manager_GUI extends JPanel {
             name = vectorTable.get(i).getName();
             status = vectorTable.get(i).getStatus().equals("free") ? "Trống" : "Đang phục vụ";
             model.addRow(new Object[]{id, name, status});
-        }         
-        
+        }
+
     }
 
     public void renderCustomer() {
@@ -370,7 +372,7 @@ public class Manager_GUI extends JPanel {
         int id = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
         String name = (String) tblData.getValueAt(tblData.getSelectedRow(), 1);
         String phone = (String) tblData.getValueAt(tblData.getSelectedRow(), 2);
-        return new Customer_DTO(id, name, phone);
+        return new Customer_DTO(id, phone, name);
     }
 
     public FoodItem_DTO getFoodItemRowSelected() {
