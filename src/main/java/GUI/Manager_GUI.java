@@ -20,34 +20,79 @@ import java.util.Vector;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 public class Manager_GUI extends JPanel {
 
-    DefaultTableModel model = new DefaultTableModel();
+    DefaultTableModel model = new DefaultTableModel();    
     Vector<MenuItem> vectorMenuItem;
-    String username;
-
+    String username;    
+    TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(); ;    
+    //main contructor
     public Manager_GUI(Vector<MenuItem> vectorMenuItem, String username) {
         this.username = username;
         System.out.println("managerGUI username: " + username);
         this.vectorMenuItem = vectorMenuItem;
         initComponents();
         settingTable();
-        setIconForButton();
+        setIconForButton();        
+        
+        rowSorter.setModel(model);
+        tblData.setModel(model);
+        tblData.setRowSorter(rowSorter);
+        tblData.setRowSorter(rowSorter);  
+        addEventSearch(); 
     }
 
+    //contructor test GUI
     public Manager_GUI() {
         this.vectorMenuItem = vectorMenuItem;
         initComponents();
         settingTable();
-        setIconForButton();
+        setIconForButton();                        
+    }
+
+    private void addEventSearch() {                        
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                String text = txtSearch.getText();
+                System.out.println("them 1 ki tu");
+                System.out.println("text: " + text);                
+                if (text.trim().length() == 0) {
+                    rowSorter.setRowFilter(null);
+                } else {                                        
+                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));                                        
+                }
+            }
+            
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                String text = txtSearch.getText();
+                System.out.println("xoa 1 ki tu");
+                System.out.println("text: " + text);
+                if (text.trim().length() == 0) {
+                    rowSorter.setRowFilter(null);
+                } else {                    
+                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                }
+            }          
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                throw new UnsupportedOperationException("Not supported yet."); 
+            } 
+        });
     }
 
     private MenuItem getMenuItemActive() {
@@ -64,8 +109,7 @@ public class Manager_GUI extends JPanel {
         tblData.getTableHeader().setOpaque(false);
         tblData.getTableHeader().setBackground(new Color(51, 175, 255));
         tblData.getTableHeader().setForeground(new Color(255, 255, 255));
-        tblData.setShowGrid(false);//tắt đường viền của bảng        
-        tblData.setModel(model);
+        tblData.setShowGrid(false);//tắt đường viền của bảng                
     }
 
     private void setIconForButton() {
@@ -186,7 +230,8 @@ public class Manager_GUI extends JPanel {
             name = vectorTable.get(i).getName();
             status = vectorTable.get(i).getStatus().equals("free") ? "Trống" : "Đang phục vụ";
             model.addRow(new Object[]{id, name, status});
-        }
+        }         
+        
     }
 
     public void renderCustomer() {
@@ -269,14 +314,6 @@ public class Manager_GUI extends JPanel {
         }
     }
 
-    public JComboBox<String> getCboSearchField() {
-        return cboSearchField;
-    }
-
-    public void setCboSearchField(JComboBox<String> cboSearchField) {
-        this.cboSearchField = cboSearchField;
-    }
-
     public JTextField getTxtSearch() {
         return txtSearch;
     }
@@ -323,21 +360,21 @@ public class Manager_GUI extends JPanel {
         String status = (String) tblData.getValueAt(tblData.getSelectedRow(), 2);
         return new Table_DTO(id, name, status.equals("Trống") ? "free" : "serving");
     }
-    
+
     public Customer_DTO getCustomerRowSelected() {
         int id = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
         String name = (String) tblData.getValueAt(tblData.getSelectedRow(), 1);
         String phone = (String) tblData.getValueAt(tblData.getSelectedRow(), 2);
         return new Customer_DTO(id, name, phone);
     }
-    
+
     public FoodItem_DTO getFoodItemRowSelected() {
         int id = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
         String name = (String) tblData.getValueAt(tblData.getSelectedRow(), 1);
         String description = (String) tblData.getValueAt(tblData.getSelectedRow(), 2);
         String urlImage = (String) tblData.getValueAt(tblData.getSelectedRow(), 3);
         String unitName = (String) tblData.getValueAt(tblData.getSelectedRow(), 4);
-        int unitPrice = (int) tblData.getValueAt(tblData.getSelectedRow(), 5);        
+        int unitPrice = (int) tblData.getValueAt(tblData.getSelectedRow(), 5);
         int idCategory = (int) tblData.getValueAt(tblData.getSelectedRow(), 6);
         return new FoodItem_DTO(id, name, description, urlImage, unitName, unitPrice, idCategory);
     }
@@ -355,7 +392,7 @@ public class Manager_GUI extends JPanel {
         btnAdd = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         txtSearch = new javax.swing.JTextField();
-        cboSearchField = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(204, 204, 204));
         setAlignmentX(0.0F);
@@ -436,19 +473,17 @@ public class Manager_GUI extends JPanel {
         jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 10));
         jPanel2.setOpaque(false);
         jPanel2.setPreferredSize(new java.awt.Dimension(1008, 50));
-        jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         txtSearch.setForeground(new java.awt.Color(153, 153, 153));
-        txtSearch.setText("Search");
         txtSearch.setAlignmentX(0.0F);
         txtSearch.setAlignmentY(0.0F);
         txtSearch.setBorder(null);
         txtSearch.setPreferredSize(new java.awt.Dimension(200, 25));
-        jPanel2.add(txtSearch);
+        jPanel2.add(txtSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 10, -1, -1));
 
-        cboSearchField.setMinimumSize(new java.awt.Dimension(100, 25));
-        cboSearchField.setPreferredSize(new java.awt.Dimension(100, 25));
-        jPanel2.add(cboSearchField);
+        jLabel1.setText("Tìm kiếm:");
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 10, -1, 30));
 
         add(jPanel2, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
@@ -549,8 +584,8 @@ public class Manager_GUI extends JPanel {
                     if (confirm == JOptionPane.YES_OPTION) {
                         int idSelected = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
                         FoodItem_BUS t = new FoodItem_BUS();
-                        t.delete(idSelected);       
-                        renderFoodItem();                                             
+                        t.delete(idSelected);
+                        renderFoodItem();
                     }
                 }
                 break;
@@ -562,8 +597,8 @@ public class Manager_GUI extends JPanel {
                     if (confirm == JOptionPane.YES_OPTION) {
                         int idSelected = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
                         Customer_BUS t = new Customer_BUS();
-                        t.delete(idSelected);       
-                        renderCustomer();                                             
+                        t.delete(idSelected);
+                        renderCustomer();
                     }
                 }
                 break;
@@ -575,8 +610,8 @@ public class Manager_GUI extends JPanel {
                     if (confirm == JOptionPane.YES_OPTION) {
                         int idSelected = (int) tblData.getValueAt(tblData.getSelectedRow(), 0);
                         Table_BUS t = new Table_BUS();
-                        t.delete(idSelected);       
-                        renderTable();                                             
+                        t.delete(idSelected);
+                        renderTable();
                     }
                 }
                 break;
@@ -628,7 +663,7 @@ public class Manager_GUI extends JPanel {
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
-    private javax.swing.JComboBox<String> cboSearchField;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
