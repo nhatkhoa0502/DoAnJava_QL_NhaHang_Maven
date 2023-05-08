@@ -128,6 +128,7 @@ public class Manager_GUI extends JPanel {
     public void renderEmployeeData() {
         btnDelete.setText("Xóa");
         btnEdit.setVisible(true);
+        btnDelete.setVisible(true);
         // xoa du lieu trong model
         model.setRowCount(0);
         model.setColumnCount(0);
@@ -161,6 +162,7 @@ public class Manager_GUI extends JPanel {
     public void renderFoodCategory() {
         btnDelete.setText("Xóa");
         btnEdit.setVisible(true);
+        btnDelete.setVisible(true);
         // xoa du lieu trong model
         model.setRowCount(0);
         model.setColumnCount(0);
@@ -182,6 +184,7 @@ public class Manager_GUI extends JPanel {
     public void renderFoodItem() {
         btnDelete.setText("Xóa");
         btnEdit.setVisible(true);
+        btnDelete.setVisible(true);
         // xoa du lieu trong model
         model.setRowCount(0);
         model.setColumnCount(0);
@@ -213,6 +216,7 @@ public class Manager_GUI extends JPanel {
     public void renderTable() {
         btnDelete.setText("Xóa");
         btnEdit.setVisible(true);
+        btnDelete.setVisible(true);
         // xoa du lieu trong model
         model.setRowCount(0);
         model.setColumnCount(0);
@@ -237,6 +241,7 @@ public class Manager_GUI extends JPanel {
     public void renderCustomer() {
         btnDelete.setText("Xóa");
         btnEdit.setVisible(true);
+        btnDelete.setVisible(true);
         // xoa du lieu trong model
         model.setRowCount(0);
         model.setColumnCount(0);
